@@ -53,6 +53,9 @@ android {
 
 dependencies {
 
+    //Navigation
+    implementation("androidx.navigation:navigation-compose:2.7.6")
+
     //DaggerHilt
     val hilt_version = "2.48"
     implementation ("com.google.dagger:hilt-android:$hilt_version")
