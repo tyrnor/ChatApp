@@ -13,11 +13,7 @@
         android:theme="@style/Theme.ChatApp"
         tools:targetApi="31" >
         <activity
-            android:name=".ui.view.FirebaseAuthActivity"
-            android:exported="false"
-            android:label="@string/title_activity_firebase_auth"
-            android:theme="@style/Theme.ChatApp" />
-        <activity
+            android:windowSoftInputMode="adjustResize"
             android:name=".ui.view.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
