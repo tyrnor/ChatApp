@@ -7,6 +7,7 @@ import android.util.Patterns
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -50,10 +52,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.chatapp.R
 import com.example.chatapp.common.rememberImeState
+import com.example.chatapp.domain.model.LoginState
 import com.example.chatapp.ui.composable.TopBar
+import com.example.chatapp.ui.navigation.Home
+import com.example.chatapp.ui.navigation.Register
 import com.example.chatapp.ui.theme.AppTheme.colorScheme
 import com.example.chatapp.ui.theme.AppTheme.shape
 import com.example.chatapp.ui.theme.AppTheme.size
@@ -61,17 +67,28 @@ import com.example.chatapp.ui.theme.AppTheme.typography
 import com.example.chatapp.ui.theme.Black
 import com.example.chatapp.ui.theme.Grey
 import com.example.chatapp.ui.theme.LightGrey
-import com.example.chatapp.ui.theme.Purple
 import com.example.chatapp.ui.theme.White
+import com.example.chatapp.ui.viewmodel.LoginViewModel
 
 @Composable
 fun LoginScreen(navController: NavController) {
     val imeState = rememberImeState()
     val scrollState = rememberScrollState()
+    val loginViewModel : LoginViewModel = hiltViewModel()
+    val loginState by loginViewModel.loginState.collectAsState()
 
     LaunchedEffect(key1 = imeState.value) {
         if (imeState.value) {
             scrollState.scrollTo(scrollState.maxValue / 2)
+        }
+    }
+
+    LaunchedEffect(loginState) {
+        when (loginState) {
+            is LoginState.Success -> {
+                navController.navigate(Home.route)
+            }
+            else -> {}
         }
     }
 
@@ -84,8 +101,8 @@ fun LoginScreen(navController: NavController) {
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Header()
-        Body()
-        Footer()
+        Body(loginViewModel)
+        Footer(navController)
     }
 }
 
@@ -98,26 +115,26 @@ fun Header() {
 }
 
 @Composable
-fun Body() {
+fun Body(loginViewModel: LoginViewModel) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
-    var isLoginEnable by rememberSaveable { mutableStateOf(false) }
+
     Column {
         ImageLogo(Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.size(size.medium))
         Email(email = email) {
             email = it
-            isLoginEnable = enableLogin(email, password)
         }
         Spacer(modifier = Modifier.size(size.small))
         Password(password) {
             password = it
-            isLoginEnable = enableLogin(email, password)
         }
         Spacer(modifier = Modifier.size(size.small))
         ForgotPassword(modifier = Modifier.align(Alignment.End))
         Spacer(modifier = Modifier.size(size.medium))
-        LoginButton(isLoginEnable)
+        LoginButton{
+            loginViewModel.login(email,password)
+        }
         Spacer(modifier = Modifier.size(size.medium))
         LoginDivider()
         Spacer(modifier = Modifier.size(size.medium))
@@ -214,22 +231,18 @@ fun ForgotPassword(modifier: Modifier) {
 }
 
 @Composable
-fun LoginButton(loginEnable: Boolean) {
+fun LoginButton(onClick: () -> Unit) {
     Button(
-        onClick = { },
-        enabled = loginEnable,
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = size.small),
         colors = ButtonDefaults.buttonColors(
             containerColor = colorScheme.primary,
-            disabledContainerColor = Purple,
             contentColor = colorScheme.onPrimary,
-            disabledContentColor = colorScheme.onPrimary
         ),
         elevation = ButtonDefaults.buttonElevation(
             defaultElevation = size.small,
-            disabledElevation = size.small
         ),
         shape = shape.button
     ) {
@@ -296,22 +309,30 @@ fun SocialLogin() {
 }
 
 @Composable
-fun Footer() {
-    Column(modifier = Modifier.fillMaxWidth().padding(vertical = size.medium)) {
+fun Footer(navController: NavController) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(vertical = size.medium)) {
 
         Spacer(modifier = Modifier.size(size.large))
-        SignUp()
+        SignUp(navController)
         Spacer(modifier = Modifier.size(size.large))
     }
 }
 
 @Composable
-fun SignUp() {
+fun SignUp(navController: NavController) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         Text(text = "Don't have an account?", style = typography.labelNormal, color = Grey)
         Text(
             text = "Sign Up",
-            modifier = Modifier.padding(horizontal = size.small),
+            modifier = Modifier
+                .padding(horizontal = size.small)
+                .clickable {
+                    navController.navigate(
+                        Register.route
+                    )
+                },
             style = typography.labelNormal.copy(fontWeight = FontWeight.Bold),
             color = colorScheme.primary
         )

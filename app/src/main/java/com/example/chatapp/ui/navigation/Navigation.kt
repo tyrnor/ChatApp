@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.chatapp.ui.view.HomeScreen
 import com.example.chatapp.ui.view.LoginScreen
 import com.example.chatapp.ui.view.RegisterScreen
 
@@ -16,6 +17,9 @@ fun Navigation() {
         }
         composable(Register.route) {
             RegisterScreen(navController = navController)
+        }
+        composable(Home.route){
+            HomeScreen(navController = navController)
         }
     }
 }

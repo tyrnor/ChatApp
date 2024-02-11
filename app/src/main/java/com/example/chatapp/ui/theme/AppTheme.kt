@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.sp
 private val darkColorScheme = AppColorScheme(
     background = DarkPurple,
     onBackground = White,
-    primary = PurpleGrey,
+    primary = Purple,
     onPrimary = White,
     secondary = LightGrey,
     onSecondary = Black,
@@ -24,7 +24,7 @@ private val darkColorScheme = AppColorScheme(
 private val lightColorScheme = AppColorScheme(
     background = White,
     onBackground = Black,
-    primary = PurpleGrey,
+    primary = Purple,
     onPrimary = White,
     secondary = LightGrey,
     onSecondary = Black,

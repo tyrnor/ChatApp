@@ -11,3 +11,6 @@ object Login: Destinations {
 object Register: Destinations {
     override val route = "register"
 }
+object Home: Destinations {
+    override val route: String = "home"
+}
