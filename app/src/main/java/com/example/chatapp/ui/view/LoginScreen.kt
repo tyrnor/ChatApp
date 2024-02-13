@@ -3,7 +3,6 @@
 package com.example.chatapp.ui.view
 
 import android.app.Activity
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,7 +23,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Error
-import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -56,6 +54,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import com.example.chatapp.R
 import com.example.chatapp.common.rememberImeState
 import com.example.chatapp.domain.model.LoginState
@@ -83,6 +82,8 @@ fun LoginScreen(navController: NavController, authenticationViewModel: Authentic
     var loginErrorMessage by remember {
         mutableStateOf("")
     }
+    val activity = LocalContext.current as Activity
+
 
     LaunchedEffect(key1 = imeState.value) {
         if (imeState.value) {
@@ -99,7 +100,6 @@ fun LoginScreen(navController: NavController, authenticationViewModel: Authentic
             is LoginState.Error -> {
                 loginErrorMessage = (loginState as LoginState.Error).message
                 authenticationViewModel.loginFailed()
-                Log.d("TAG", "LoginScreen: $loginErrorMessage")
             }
 
             else -> {
@@ -115,17 +115,11 @@ fun LoginScreen(navController: NavController, authenticationViewModel: Authentic
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Header()
+        TopBar(icon = Icons.Filled.Close, iconDescription = "Close App") {
+            activity.finish()
+        }
         Body(authenticationViewModel, loginFailed, loginErrorMessage)
         Footer(navController)
-    }
-}
-
-@Composable
-fun Header() {
-    val activity = LocalContext.current as Activity
-    TopBar(icon = Icons.Filled.Close, iconDescription = "Close App") {
-        activity.finish()
     }
 }
 
@@ -449,7 +443,7 @@ fun SignUp(navController: NavController) {
                 .padding(horizontal = size.small)
                 .clickable {
                     navController.navigate(
-                        Register.route
+                        route = Register.route
                     )
                 },
             style = typography.labelNormal.copy(fontWeight = FontWeight.Bold),

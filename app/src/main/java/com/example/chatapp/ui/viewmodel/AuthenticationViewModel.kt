@@ -1,6 +1,5 @@
 package com.example.chatapp.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatapp.common.FirebaseAuthErrorCodes
