@@ -1,10 +1,12 @@
 package com.example.chatapp.data.source.remote
 
 import com.example.chatapp.data.model.AuthenticatedUser
-import com.google.firebase.ktx.Firebase
+import com.example.chatapp.data.model.AuthenticationException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 
 class FirebaseAuthService {
@@ -21,6 +23,8 @@ class FirebaseAuthService {
                     displayName = firebaseUser.displayName
                 )
             )
+        } catch (e: FirebaseAuthException) {
+            Result.failure(AuthenticationException(e.errorCode, e.message))
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -37,7 +41,9 @@ class FirebaseAuthService {
                     displayName = firebaseUser.displayName
                 )
             )
-        } catch (e: Exception){
+        } catch (e: FirebaseAuthException) {
+            Result.failure(AuthenticationException(e.errorCode, e.message))
+        } catch (e: Exception) {
             Result.failure(e)
         }
 
@@ -55,6 +61,8 @@ class FirebaseAuthService {
                     displayName = firebaseUser.displayName
                 )
             )
+        } catch (e: FirebaseAuthException) {
+            Result.failure(AuthenticationException(e.errorCode, e.message))
         } catch (e: Exception) {
             Result.failure(e)
         }

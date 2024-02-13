@@ -18,7 +18,8 @@ private val darkColorScheme = AppColorScheme(
     onPrimary = White,
     secondary = LightGrey,
     onSecondary = Black,
-    icons = White
+    icons = White,
+    error = Red
 )
 
 private val lightColorScheme = AppColorScheme(
@@ -28,7 +29,8 @@ private val lightColorScheme = AppColorScheme(
     onPrimary = White,
     secondary = LightGrey,
     onSecondary = Black,
-    icons = Black
+    icons = Black,
+    error = Red
 )
 
 private val typography = AppTypography(

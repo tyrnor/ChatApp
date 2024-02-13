@@ -3,7 +3,7 @@
 package com.example.chatapp.ui.view
 
 import android.app.Activity
-import android.util.Patterns
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,6 +23,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -39,6 +41,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -52,7 +55,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.chatapp.R
 import com.example.chatapp.common.rememberImeState
@@ -68,14 +70,19 @@ import com.example.chatapp.ui.theme.Black
 import com.example.chatapp.ui.theme.Grey
 import com.example.chatapp.ui.theme.LightGrey
 import com.example.chatapp.ui.theme.White
-import com.example.chatapp.ui.viewmodel.LoginViewModel
+import com.example.chatapp.ui.viewmodel.AuthenticationViewModel
+
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavController, authenticationViewModel: AuthenticationViewModel) {
     val imeState = rememberImeState()
     val scrollState = rememberScrollState()
-    val loginViewModel : LoginViewModel = hiltViewModel()
-    val loginState by loginViewModel.loginState.collectAsState()
+    val loginState by authenticationViewModel.loginState.collectAsState()
+    val loginFailed by authenticationViewModel.loginFailed.collectAsState()
+
+    var loginErrorMessage by remember {
+        mutableStateOf("")
+    }
 
     LaunchedEffect(key1 = imeState.value) {
         if (imeState.value) {
@@ -88,7 +95,15 @@ fun LoginScreen(navController: NavController) {
             is LoginState.Success -> {
                 navController.navigate(Home.route)
             }
-            else -> {}
+
+            is LoginState.Error -> {
+                loginErrorMessage = (loginState as LoginState.Error).message
+                authenticationViewModel.loginFailed()
+                Log.d("TAG", "LoginScreen: $loginErrorMessage")
+            }
+
+            else -> {
+            }
         }
     }
 
@@ -101,7 +116,7 @@ fun LoginScreen(navController: NavController) {
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Header()
-        Body(loginViewModel)
+        Body(authenticationViewModel, loginFailed, loginErrorMessage)
         Footer(navController)
     }
 }
@@ -115,31 +130,59 @@ fun Header() {
 }
 
 @Composable
-fun Body(loginViewModel: LoginViewModel) {
+fun Body(
+    authenticationViewModel: AuthenticationViewModel,
+    loginFailed: Boolean,
+    loginErrorMessage: String,
+) {
+
     var email by rememberSaveable { mutableStateOf("") }
+    var emailError by remember { mutableStateOf(false) }
     var password by rememberSaveable { mutableStateOf("") }
+    var passwordError by remember { mutableStateOf(false) }
+
 
     Column {
         ImageLogo(Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.size(size.medium))
-        Email(email = email) {
+        Email(email = email, emailError = emailError) {
             email = it
         }
         Spacer(modifier = Modifier.size(size.small))
-        Password(password) {
+        Password(password = password, passwordError = passwordError) {
             password = it
         }
         Spacer(modifier = Modifier.size(size.small))
         ForgotPassword(modifier = Modifier.align(Alignment.End))
         Spacer(modifier = Modifier.size(size.medium))
-        LoginButton{
-            loginViewModel.login(email,password)
+        if (loginFailed) LoginFailedMessage(loginErrorMessage)
+        LoginButton(
+            email = email,
+            password = password,
+            authenticationViewModel,
+            setEmailError = { emailError = it },
+            setPasswordError = { passwordError = it }
+        ) {
+            authenticationViewModel.login(email, password)
         }
         Spacer(modifier = Modifier.size(size.medium))
         LoginDivider()
         Spacer(modifier = Modifier.size(size.medium))
         SocialLogin()
     }
+}
+
+@Composable
+fun LoginFailedMessage(message: String) {
+    Row (modifier = Modifier.padding(horizontal = size.small, vertical = size.medium), verticalAlignment = Alignment.CenterVertically) {
+        Icon(imageVector = Icons.Filled.Error, contentDescription = "error icon", tint = colorScheme.error)
+        Text(
+            text = message,
+            style = typography.labelNormal,
+            modifier = Modifier.padding(horizontal = size.small)
+        )
+    }
+
 }
 
 @Composable
@@ -153,16 +196,25 @@ fun ImageLogo(modifier: Modifier) {
 
 
 @Composable
-fun Email(email: String, onTextChanged: (String) -> Unit) {
+fun Email(
+    email: String,
+    emailError: Boolean,
+    onTextChanged: (String) -> Unit,
+) {
     TextField(
         value = email,
         onValueChange = { onTextChanged(it) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = size.small)
-            .border(1.dp, color = colorScheme.primary, shape = shape.container),
+            .border(
+                1.dp,
+                color = if (emailError) colorScheme.error else colorScheme.primary,
+                shape = shape.container
+            ),
         placeholder = { Text(text = "Email", style = typography.body) },
         textStyle = typography.body,
+        isError = emailError,
         maxLines = 1,
         singleLine = true,
         keyboardOptions = KeyboardOptions(
@@ -173,14 +225,32 @@ fun Email(email: String, onTextChanged: (String) -> Unit) {
             textColor = colorScheme.onSecondary,
             containerColor = colorScheme.secondary,
             focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
+            unfocusedIndicatorColor = Color.Transparent,
+            errorIndicatorColor = Color.Transparent
         ),
         shape = shape.container,
+        trailingIcon = {
+            if (emailError) {
+                Icon(imageVector = Icons.Filled.Error, contentDescription = "error icon")
+            }
+        }
     )
+    if (emailError) {
+        Text(
+            text = "Email cannot be empty",
+            color = colorScheme.error,
+            style = typography.labelSmall,
+            modifier = Modifier.padding(start = size.small, top = size.small)
+        )
+    }
 }
 
 @Composable
-fun Password(password: String, onTextChanged: (String) -> Unit) {
+fun Password(
+    password: String,
+    passwordError: Boolean,
+    onTextChanged: (String) -> Unit,
+) {
     var passwordVisibility by rememberSaveable { mutableStateOf(false) }
     TextField(
         value = password,
@@ -188,17 +258,23 @@ fun Password(password: String, onTextChanged: (String) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = size.small)
-            .border(1.dp, color = colorScheme.primary, shape = shape.container),
+            .border(
+                1.dp,
+                color = if (passwordError) colorScheme.error else colorScheme.primary,
+                shape = shape.container
+            ),
         placeholder = { Text(text = "Password", style = typography.body) },
         textStyle = typography.body,
         maxLines = 1,
+        isError = passwordError,
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         colors = TextFieldDefaults.textFieldColors(
             textColor = colorScheme.onSecondary,
             containerColor = colorScheme.secondary,
             focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
+            unfocusedIndicatorColor = Color.Transparent,
+            errorIndicatorColor = Color.Transparent
         ),
         trailingIcon = {
             val image = if (passwordVisibility) {
@@ -206,9 +282,14 @@ fun Password(password: String, onTextChanged: (String) -> Unit) {
             } else {
                 Icons.Filled.Visibility
             }
-            IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
-                Icon(imageVector = image, contentDescription = "show pass")
+            if (passwordError) {
+                Icon(imageVector = Icons.Filled.Error, contentDescription = "error icon")
+            } else {
+                IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                    Icon(imageVector = image, contentDescription = "show pass")
+                }
             }
+
         },
         visualTransformation = if (passwordVisibility) {
             VisualTransformation.None
@@ -217,6 +298,14 @@ fun Password(password: String, onTextChanged: (String) -> Unit) {
         },
         shape = shape.container
     )
+    if (passwordError) {
+        Text(
+            text = "Password cannot be empty",
+            color = colorScheme.error,
+            style = typography.labelSmall,
+            modifier = Modifier.padding(start = size.small, top = size.small)
+        )
+    }
 }
 
 @Composable
@@ -231,9 +320,37 @@ fun ForgotPassword(modifier: Modifier) {
 }
 
 @Composable
-fun LoginButton(onClick: () -> Unit) {
+fun LoginButton(
+    email: String,
+    password: String,
+    authenticationViewModel: AuthenticationViewModel,
+    setEmailError: (Boolean) -> Unit,
+    setPasswordError: (Boolean) -> Unit,
+    onClick: () -> Unit,
+) {
     Button(
-        onClick = onClick,
+        onClick = {
+            var hasError = false
+            if (email.isBlank()) {
+                setEmailError(true)
+                authenticationViewModel.resetLoginFailed()
+                hasError = true
+            } else {
+                setEmailError(false)
+            }
+
+            if (password.isBlank()) {
+                setPasswordError(true)
+                authenticationViewModel.resetLoginFailed()
+                hasError = true
+            } else {
+                setPasswordError(false)
+            }
+
+            if (!hasError) {
+                onClick()
+            }
+        },
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = size.small),
@@ -310,9 +427,11 @@ fun SocialLogin() {
 
 @Composable
 fun Footer(navController: NavController) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = size.medium)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = size.medium)
+    ) {
 
         Spacer(modifier = Modifier.size(size.large))
         SignUp(navController)
@@ -339,6 +458,4 @@ fun SignUp(navController: NavController) {
     }
 }
 
-fun enableLogin(email: String, password: String): Boolean =
-    Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length > 6
 
