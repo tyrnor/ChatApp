@@ -40,7 +40,7 @@ fun Navigation() {
                 slideOutHorizontally(targetOffsetX = { 1000 }, animationSpec = tween(700)) + fadeOut(animationSpec = tween(700))
             }
         ) {
-            RegisterScreen(navController = navController)
+            RegisterScreen(navController = navController,  authenticationViewModel = authenticationViewModel)
         }
         composable(
             Home.route,

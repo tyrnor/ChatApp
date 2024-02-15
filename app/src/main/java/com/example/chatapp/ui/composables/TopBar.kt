@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.composable
+package com.example.chatapp.ui.composables
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row

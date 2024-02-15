@@ -36,12 +36,12 @@ private val lightColorScheme = AppColorScheme(
 private val typography = AppTypography(
     titleLarge = TextStyle(
         fontFamily = SanFranciscoPro,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.SemiBold,
         fontSize = 24.sp
     ),
     titleNormal = TextStyle(
         fontFamily = SanFranciscoPro,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.SemiBold,
         fontSize = 20.sp
     ),
     body = TextStyle(
