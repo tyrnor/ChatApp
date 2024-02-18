@@ -1,5 +1,6 @@
 package com.example.chatapp.ui.view
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.filled.ArrowBackIos
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,8 +25,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.chatapp.common.rememberImeState
+import com.example.chatapp.domain.model.LoginState
 import com.example.chatapp.ui.composables.Footer
 import com.example.chatapp.ui.composables.ImageLogo
+import com.example.chatapp.ui.composables.LoginFailedMessage
 import com.example.chatapp.ui.composables.TopBar
 import com.example.chatapp.ui.composables.buttons.GoogleSignInButton
 import com.example.chatapp.ui.composables.buttons.LoginRegisterButton
@@ -32,6 +36,7 @@ import com.example.chatapp.ui.composables.dividers.LoginDivider
 import com.example.chatapp.ui.composables.textfields.EmailTextField
 import com.example.chatapp.ui.composables.textfields.PasswordTextField
 import com.example.chatapp.ui.composables.textfields.UsernameTextField
+import com.example.chatapp.ui.navigation.Home
 import com.example.chatapp.ui.navigation.Login
 import com.example.chatapp.ui.theme.AppTheme.colorScheme
 import com.example.chatapp.ui.theme.AppTheme.size
@@ -44,9 +49,32 @@ fun RegisterScreen(navController: NavController, authenticationViewModel: Authen
     val imeState = rememberImeState()
     val scrollState = rememberScrollState()
 
+    val loginState by authenticationViewModel.loginState.collectAsState()
+    val loginFailed by authenticationViewModel.loginFailed.collectAsState()
+
+    var loginErrorMessage by remember {
+        mutableStateOf("")
+    }
+
     LaunchedEffect(key1 = imeState.value) {
         if (imeState.value) {
             scrollState.scrollTo(scrollState.maxValue / 2)
+        }
+    }
+
+    LaunchedEffect(loginState) {
+        when (loginState) {
+            is LoginState.Success -> {
+                navController.navigate(Home.route)
+            }
+
+            is LoginState.Error -> {
+                loginErrorMessage = (loginState as LoginState.Error).message
+                authenticationViewModel.loginFailed()
+            }
+
+            else -> {
+            }
         }
     }
     Column(
@@ -56,19 +84,27 @@ fun RegisterScreen(navController: NavController, authenticationViewModel: Authen
             .padding(size.normal)
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.SpaceBetween
-        ) {
+    ) {
         TopBar(icon = Icons.Filled.ArrowBackIos, iconDescription = "Back") {
             navController.popBackStack()
         }
-        BodyRegister(authenticationViewModel = authenticationViewModel)
-        Footer(text1 = "Already have an account?", text2 = "Sign In"){
+        BodyRegister(
+            authenticationViewModel = authenticationViewModel,
+            loginFailed,
+            loginErrorMessage
+        )
+        Footer(text1 = "Already have an account?", text2 = "Sign In") {
             navController.navigate(Login.route)
         }
     }
 }
 
 @Composable
-fun BodyRegister(authenticationViewModel: AuthenticationViewModel) {
+fun BodyRegister(
+    authenticationViewModel: AuthenticationViewModel,
+    loginFailed: Boolean,
+    loginErrorMessage: String,
+) {
 
     var email by rememberSaveable { mutableStateOf("") }
     var emailError by remember { mutableStateOf(false) }
@@ -94,7 +130,7 @@ fun BodyRegister(authenticationViewModel: AuthenticationViewModel) {
             email = it
         }
         Spacer(modifier = Modifier.size(size.small))
-        UsernameTextField(username = username, usernameError = usernameError){
+        UsernameTextField(username = username, usernameError = usernameError) {
             username = it
         }
         Spacer(modifier = Modifier.size(size.small))
@@ -102,6 +138,7 @@ fun BodyRegister(authenticationViewModel: AuthenticationViewModel) {
             password = it
         }
         Spacer(modifier = Modifier.size(size.medium))
+        if (loginFailed) LoginFailedMessage(loginErrorMessage)
         LoginRegisterButton(
             email = email,
             username = username,
@@ -109,10 +146,13 @@ fun BodyRegister(authenticationViewModel: AuthenticationViewModel) {
             text = "Sign Up",
             authenticationViewModel = authenticationViewModel,
             setEmailError = { emailError = it },
-            setUsernameError = { usernameError = it},
+            setUsernameError = { usernameError = it },
             setPasswordError = { passwordError = it }
         ) {
-            //authenticationViewModel.register(email, username, password)
+            if (!emailError && !usernameError && !passwordError) {
+                authenticationViewModel.register(email, password, username)
+                Log.d("TAG", "BodyRegister: All OK")
+            }
         }
     }
 

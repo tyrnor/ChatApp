@@ -18,7 +18,7 @@ fun HomeScreen(navController: NavController, authenticationViewModel: Authentica
     Column {
         Text(text = "Home Screen")
         user?.let {
-            Text(text = "Welcome ${it.userId ?: "User"}")
+            Text(text = "Welcome ${it.displayName ?: "User"}")
         }
 
     }

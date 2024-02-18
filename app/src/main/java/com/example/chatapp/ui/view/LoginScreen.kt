@@ -6,7 +6,6 @@ import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,9 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,14 +31,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import com.example.chatapp.common.rememberImeState
 import com.example.chatapp.domain.model.LoginState
-import com.example.chatapp.ui.composables.textfields.EmailTextField
 import com.example.chatapp.ui.composables.Footer
-import com.example.chatapp.ui.composables.buttons.GoogleSignInButton
 import com.example.chatapp.ui.composables.ImageLogo
-import com.example.chatapp.ui.composables.dividers.LoginDivider
-import com.example.chatapp.ui.composables.buttons.LoginRegisterButton
-import com.example.chatapp.ui.composables.textfields.PasswordTextField
+import com.example.chatapp.ui.composables.LoginFailedMessage
 import com.example.chatapp.ui.composables.TopBar
+import com.example.chatapp.ui.composables.buttons.GoogleSignInButton
+import com.example.chatapp.ui.composables.buttons.LoginRegisterButton
+import com.example.chatapp.ui.composables.dividers.LoginDivider
+import com.example.chatapp.ui.composables.textfields.EmailTextField
+import com.example.chatapp.ui.composables.textfields.PasswordTextField
 import com.example.chatapp.ui.navigation.Home
 import com.example.chatapp.ui.navigation.Register
 import com.example.chatapp.ui.theme.AppTheme.colorScheme
@@ -96,8 +94,12 @@ fun LoginScreen(navController: NavController, authenticationViewModel: Authentic
         TopBar(icon = Icons.Filled.Close, iconDescription = "Close App") {
             activity.finish()
         }
-        BodyLogin(authenticationViewModel = authenticationViewModel, loginFailed = loginFailed, loginErrorMessage = loginErrorMessage)
-        Footer( text1 = "Don't have an account?", text2 = "Sign Up"){
+        BodyLogin(
+            authenticationViewModel = authenticationViewModel,
+            loginFailed = loginFailed,
+            loginErrorMessage = loginErrorMessage
+        )
+        Footer(text1 = "Don't have an account?", text2 = "Sign Up") {
             navController.navigate(Register.route)
         }
     }
@@ -148,22 +150,6 @@ fun BodyLogin(
         GoogleSignInButton()
     }
 }
-
-@Composable
-fun LoginFailedMessage(message: String) {
-    Row (modifier = Modifier.padding(horizontal = size.small, vertical = size.medium), verticalAlignment = Alignment.CenterVertically) {
-        Icon(imageVector = Icons.Filled.Error, contentDescription = "error icon", tint = colorScheme.error)
-        Text(
-            text = message,
-            style = typography.labelNormal,
-            modifier = Modifier.padding(horizontal = size.small)
-        )
-    }
-
-}
-
-
-
 
 
 @Composable

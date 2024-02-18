@@ -8,6 +8,8 @@ import com.example.chatapp.data.model.AuthenticatedUser
 import com.example.chatapp.data.model.AuthenticationException
 import com.example.chatapp.domain.model.LoginState
 import com.example.chatapp.domain.usecase.LoginUseCase
+import com.example.chatapp.domain.usecase.RegisterUseCase
+import com.example.chatapp.domain.usecase.UpdateProfileUseCase
 import com.google.firebase.FirebaseTooManyRequestsException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
+    private val registerUseCase: RegisterUseCase,
+    private val updateProfileUseCase: UpdateProfileUseCase
 ) : ViewModel() {
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
     val loginState: StateFlow<LoginState> = _loginState
@@ -58,6 +62,44 @@ class AuthenticationViewModel @Inject constructor(
             }
         }
     }
+
+    fun register(email: String, password: String, displayName: String) {
+        viewModelScope.launch {
+            _loginState.value = LoginState.Loading
+            try {
+                val registrationResult = registerUseCase(email, password)
+                registrationResult.fold(
+                    onSuccess = { authenticatedUser ->
+                        val updateProfileResult = updateProfileUseCase(authenticatedUser.userId, displayName)
+                        updateProfileResult.fold(
+                            onSuccess = {
+                                _user.value = authenticatedUser.copy(displayName = displayName)
+                                login(email, password)
+                            },
+                            onFailure = { exception ->
+                                _loginState.value = LoginState.Error("Failed to update profile: ${exception.message}")
+                            }
+                        )
+                    },
+                    onFailure = { exception ->
+                        when (exception) {
+                            is AuthenticationException -> {
+                                val message = MessageSelector.getMessageFromCode(exception.errorCode)
+                                _loginState.value = LoginState.Error(message)
+                            }
+                            else -> {
+                                _loginState.value = LoginState.Error("Registration failed: ${exception.message}")
+                            }
+                        }
+                    }
+                )
+            } catch (e: Exception) {
+                _loginState.value = LoginState.Error("An unknown error occurred during registration")
+            }
+        }
+    }
+
+
 
     fun loginFailed(){
         _loginFailed.value = true

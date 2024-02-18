@@ -6,13 +6,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 
 class FirebaseAuthService {
 
     private val firebaseAuth: FirebaseAuth by lazy { Firebase.auth }
-     suspend fun register(email: String, password: String): Result<AuthenticatedUser> {
+    suspend fun register(email: String, password: String): Result<AuthenticatedUser> {
         return try {
             val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
             val firebaseUser = authResult.user
@@ -30,7 +31,7 @@ class FirebaseAuthService {
         }
     }
 
-     suspend fun login(email: String, password: String): Result<AuthenticatedUser> {
+    suspend fun login(email: String, password: String): Result<AuthenticatedUser> {
         return try {
             val authResult = firebaseAuth.signInWithEmailAndPassword(email, password).await()
             val firebaseUser = authResult.user
@@ -68,4 +69,15 @@ class FirebaseAuthService {
         }
     }
 
+    suspend fun updateUserProfile(userId: String, displayName: String): Result<Unit> {
+        return try {
+            val userProfileChangeRequest = userProfileChangeRequest {
+                this.displayName = displayName
+            }
+            Firebase.auth.currentUser?.updateProfile(userProfileChangeRequest)?.await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

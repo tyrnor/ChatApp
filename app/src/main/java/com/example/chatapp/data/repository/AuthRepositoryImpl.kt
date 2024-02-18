@@ -17,4 +17,8 @@ class AuthRepositoryImpl @Inject constructor(private val firebaseAuthService: Fi
     override suspend fun googleSignIn(token: String): Result<AuthenticatedUser> {
         return firebaseAuthService.googleSignIn(token)
     }
+
+    override suspend fun updateUserProfile(userId: String, displayName: String): Result<Unit> {
+        return firebaseAuthService.updateUserProfile(userId, displayName)
+    }
 }
