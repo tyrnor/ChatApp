@@ -22,7 +22,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.navigation.NavController
 import com.example.chatapp.common.rememberImeState
 import com.example.chatapp.domain.model.LoginState
@@ -99,6 +101,7 @@ fun RegisterScreen(navController: NavController, authenticationViewModel: Authen
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun BodyRegister(
     authenticationViewModel: AuthenticationViewModel,
@@ -112,6 +115,8 @@ fun BodyRegister(
     var usernameError by remember { mutableStateOf(false) }
     var password by rememberSaveable { mutableStateOf("") }
     var passwordError by remember { mutableStateOf(false) }
+
+    val controller = LocalSoftwareKeyboardController.current
 
     Column {
         ImageLogo(modifier = Modifier.align(Alignment.CenterHorizontally))
@@ -150,8 +155,8 @@ fun BodyRegister(
             setPasswordError = { passwordError = it }
         ) {
             if (!emailError && !usernameError && !passwordError) {
+                controller?.hide()
                 authenticationViewModel.register(email, password, username)
-                Log.d("TAG", "BodyRegister: All OK")
             }
         }
     }

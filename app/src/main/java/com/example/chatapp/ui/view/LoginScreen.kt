@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+
 
 package com.example.chatapp.ui.view
 
@@ -14,7 +14,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,8 +24,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import com.example.chatapp.common.rememberImeState
@@ -105,6 +106,7 @@ fun LoginScreen(navController: NavController, authenticationViewModel: Authentic
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun BodyLogin(
     authenticationViewModel: AuthenticationViewModel,
@@ -116,6 +118,8 @@ fun BodyLogin(
     var emailError by remember { mutableStateOf(false) }
     var password by rememberSaveable { mutableStateOf("") }
     var passwordError by remember { mutableStateOf(false) }
+
+    val controller = LocalSoftwareKeyboardController.current
 
 
     Column {
@@ -142,6 +146,7 @@ fun BodyLogin(
             setUsernameError = {},
             setPasswordError = { passwordError = it }
         ) {
+            controller?.hide()
             authenticationViewModel.login(email, password)
         }
         Spacer(modifier = Modifier.size(size.medium))
