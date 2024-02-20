@@ -1,15 +1,18 @@
 package com.example.chatapp.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatapp.common.FirebaseAuthErrorCodes
 import com.example.chatapp.common.MessageSelector
 import com.example.chatapp.data.model.AuthenticatedUser
 import com.example.chatapp.data.model.AuthenticationException
+import com.example.chatapp.data.model.UserInformation
 import com.example.chatapp.domain.model.LoginState
 import com.example.chatapp.domain.usecase.auth.LoginUseCase
 import com.example.chatapp.domain.usecase.auth.RegisterUseCase
 import com.example.chatapp.domain.usecase.auth.UpdateProfileUseCase
+import com.example.chatapp.domain.usecase.database.AddUserUseCase
 import com.google.firebase.FirebaseTooManyRequestsException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +24,8 @@ import javax.inject.Inject
 class AuthenticationViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val registerUseCase: RegisterUseCase,
-    private val updateProfileUseCase: UpdateProfileUseCase
+    private val updateProfileUseCase: UpdateProfileUseCase,
+    private val addUserUseCase: AddUserUseCase
 ) : ViewModel() {
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
     val loginState: StateFlow<LoginState> = _loginState
@@ -64,8 +68,8 @@ class AuthenticationViewModel @Inject constructor(
     }
 
     fun register(email: String, password: String, displayName: String) {
+        _loginState.value = LoginState.Loading
         viewModelScope.launch {
-            _loginState.value = LoginState.Loading
             try {
                 val registrationResult = registerUseCase(email, password)
                 registrationResult.fold(
@@ -73,8 +77,17 @@ class AuthenticationViewModel @Inject constructor(
                         val updateProfileResult = updateProfileUseCase(authenticatedUser.userId, displayName)
                         updateProfileResult.fold(
                             onSuccess = {
-                                _user.value = authenticatedUser.copy(displayName = displayName)
-                                login(email, password)
+                                val userInfo = UserInformation(displayName, email)
+                                val addUserResult = addUserUseCase(authenticatedUser.userId, userInfo)
+                                addUserResult.fold(
+                                    onSuccess = {
+                                        _user.value = authenticatedUser.copy(displayName = displayName)
+                                        login(email, password)
+                                    },
+                                    onFailure = { exception ->
+                                        _loginState.value = LoginState.Error("Failed to add user to database: ${exception.message}")
+                                    }
+                                )
                             },
                             onFailure = { exception ->
                                 _loginState.value = LoginState.Error("Failed to update profile: ${exception.message}")
