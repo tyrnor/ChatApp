@@ -29,7 +29,7 @@ import com.example.chatapp.ui.viewmodel.AuthenticationViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController, authenticationViewModel: AuthenticationViewModel) {
+fun HomeScreen(authenticationViewModel: AuthenticationViewModel) {
 
     val user by authenticationViewModel.user.collectAsState()
 

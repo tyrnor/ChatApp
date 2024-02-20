@@ -15,14 +15,12 @@ object FirebaseModule {
 
     @Provides
     @Singleton
-    fun provideFirebaseAuthService() : FirebaseAuthService {
-        return FirebaseAuthService()
-    }
+    fun provideFirebaseAuthService() : FirebaseAuthService = FirebaseAuthService()
+
 
     @Provides
     @Singleton
-    fun provideAuthRepository(service: FirebaseAuthService) : AuthRepository {
-        return AuthRepositoryImpl(service)
-    }
+    fun provideAuthRepository(service: FirebaseAuthService) : AuthRepository = AuthRepositoryImpl(service)
+
 
 }

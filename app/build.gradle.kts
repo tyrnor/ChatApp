@@ -68,6 +68,8 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation ("com.google.firebase:firebase-database-ktx")
+
 
     implementation("androidx.compose.material:material-icons-extended:1.2.1")
     implementation("androidx.core:core-ktx:1.9.0")

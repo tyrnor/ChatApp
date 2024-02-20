@@ -68,7 +68,6 @@ fun Navigation() {
             Home.route,
         ) {
             HomeScreen(
-                navController = navController,
                 authenticationViewModel = authenticationViewModel
             )
         }

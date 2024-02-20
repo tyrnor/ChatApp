@@ -31,6 +31,9 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>, navController: NavCon
                 onClick = {
                     selectedItemIndex = index
                     navController.navigate("home/" + item.title.lowercase()) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
                         launchSingleTop = true
                         restoreState = true
                     }

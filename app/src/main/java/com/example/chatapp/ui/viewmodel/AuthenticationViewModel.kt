@@ -7,9 +7,9 @@ import com.example.chatapp.common.MessageSelector
 import com.example.chatapp.data.model.AuthenticatedUser
 import com.example.chatapp.data.model.AuthenticationException
 import com.example.chatapp.domain.model.LoginState
-import com.example.chatapp.domain.usecase.LoginUseCase
-import com.example.chatapp.domain.usecase.RegisterUseCase
-import com.example.chatapp.domain.usecase.UpdateProfileUseCase
+import com.example.chatapp.domain.usecase.auth.LoginUseCase
+import com.example.chatapp.domain.usecase.auth.RegisterUseCase
+import com.example.chatapp.domain.usecase.auth.UpdateProfileUseCase
 import com.google.firebase.FirebaseTooManyRequestsException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
