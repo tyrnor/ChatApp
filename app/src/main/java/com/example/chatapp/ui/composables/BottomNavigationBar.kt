@@ -12,8 +12,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import com.example.chatapp.domain.model.BottomNavigationItem
+import com.example.chatapp.ui.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,7 +29,7 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>, navController: NavCon
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = selectedItemIndex == index,
-                label = { Text(text = item.title)},
+                label = { Text(text = item.title, style = AppTheme.typography.labelLarge)},
                 onClick = {
                     selectedItemIndex = index
                     navController.navigate("home/" + item.title.lowercase()) {
