@@ -12,14 +12,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import com.example.chatapp.domain.model.BottomNavigationItem
+import com.example.chatapp.domain.model.Screen
 import com.example.chatapp.ui.theme.AppTheme
+import com.example.chatapp.ui.viewmodel.NavDirectionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomNavigationBar(items: List<BottomNavigationItem>, navController: NavController) {
+fun BottomNavigationBar(
+    items: List<BottomNavigationItem>,
+    navController: NavController,
+    navDirectionViewModel: NavDirectionViewModel
+) {
 
     var selectedItemIndex by rememberSaveable {
         mutableIntStateOf(0)
@@ -32,6 +37,7 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>, navController: NavCon
                 label = { Text(text = item.title, style = AppTheme.typography.labelLarge)},
                 onClick = {
                     selectedItemIndex = index
+                    navDirectionViewModel.navigateTo(Screen.fromRoute(item.title.lowercase())!!)
                     navController.navigate("home/" + item.title.lowercase()) {
                         popUpTo(navController.graph.startDestinationId) {
                             saveState = true

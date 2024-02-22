@@ -15,11 +15,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.domain.model.BottomNavigationItem
 import com.example.chatapp.ui.composables.BottomNavigationBar
 import com.example.chatapp.ui.navigation.HomeNavigation
 import com.example.chatapp.ui.viewmodel.AuthenticationViewModel
+import com.example.chatapp.ui.viewmodel.NavDirectionViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,6 +31,7 @@ fun HomeScreen(authenticationViewModel: AuthenticationViewModel) {
     val user by authenticationViewModel.user.collectAsState()
 
     val homeNavController = rememberNavController()
+    val navDirectionViewModel: NavDirectionViewModel = hiltViewModel()
 
     val items = listOf(
         BottomNavigationItem(
@@ -54,9 +57,9 @@ fun HomeScreen(authenticationViewModel: AuthenticationViewModel) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            BottomNavigationBar(items = items, navController = homeNavController)
+            BottomNavigationBar(items = items, navController = homeNavController, navDirectionViewModel = navDirectionViewModel)
         }
     ) {
-        HomeNavigation(homeNavController)
+        HomeNavigation(homeNavController, navDirectionViewModel)
     }
 }
