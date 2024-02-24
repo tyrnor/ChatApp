@@ -21,7 +21,7 @@ import com.example.chatapp.domain.model.BottomNavigationItem
 import com.example.chatapp.ui.composables.BottomNavigationBar
 import com.example.chatapp.ui.navigation.HomeNavigation
 import com.example.chatapp.ui.viewmodel.AuthenticationViewModel
-import com.example.chatapp.ui.viewmodel.NavDirectionViewModel
+import com.example.chatapp.ui.viewmodel.HomeViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,7 +31,7 @@ fun HomeScreen(authenticationViewModel: AuthenticationViewModel) {
     val user by authenticationViewModel.user.collectAsState()
 
     val homeNavController = rememberNavController()
-    val navDirectionViewModel: NavDirectionViewModel = hiltViewModel()
+    val homeViewModel: HomeViewModel = hiltViewModel()
 
     val items = listOf(
         BottomNavigationItem(
@@ -57,9 +57,9 @@ fun HomeScreen(authenticationViewModel: AuthenticationViewModel) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            BottomNavigationBar(items = items, navController = homeNavController, navDirectionViewModel = navDirectionViewModel)
+            BottomNavigationBar(items = items, navController = homeNavController, homeViewModel = homeViewModel)
         }
     ) {
-        HomeNavigation(homeNavController, navDirectionViewModel)
+        HomeNavigation(homeNavController, homeViewModel)
     }
 }

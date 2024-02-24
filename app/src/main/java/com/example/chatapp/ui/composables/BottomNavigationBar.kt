@@ -16,14 +16,14 @@ import androidx.navigation.NavController
 import com.example.chatapp.domain.model.BottomNavigationItem
 import com.example.chatapp.domain.model.Screen
 import com.example.chatapp.ui.theme.AppTheme
-import com.example.chatapp.ui.viewmodel.NavDirectionViewModel
+import com.example.chatapp.ui.viewmodel.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomNavigationBar(
     items: List<BottomNavigationItem>,
     navController: NavController,
-    navDirectionViewModel: NavDirectionViewModel
+    homeViewModel: HomeViewModel
 ) {
 
     var selectedItemIndex by rememberSaveable {
@@ -37,7 +37,7 @@ fun BottomNavigationBar(
                 label = { Text(text = item.title, style = AppTheme.typography.labelLarge)},
                 onClick = {
                     selectedItemIndex = index
-                    navDirectionViewModel.navigateTo(Screen.fromRoute(item.title.lowercase())!!)
+                    homeViewModel.navigateTo(Screen.fromRoute(item.title.lowercase())!!)
                     navController.navigate("home/" + item.title.lowercase()) {
                         popUpTo(navController.graph.startDestinationId) {
                             saveState = true

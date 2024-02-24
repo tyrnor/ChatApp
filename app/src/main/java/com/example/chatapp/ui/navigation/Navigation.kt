@@ -19,7 +19,7 @@ import com.example.chatapp.ui.view.home.ContactsScreen
 import com.example.chatapp.ui.view.home.HomeScreen
 import com.example.chatapp.ui.view.home.SettingsScreen
 import com.example.chatapp.ui.viewmodel.AuthenticationViewModel
-import com.example.chatapp.ui.viewmodel.NavDirectionViewModel
+import com.example.chatapp.ui.viewmodel.HomeViewModel
 
 @Composable
 fun Navigation() {
@@ -77,12 +77,12 @@ fun Navigation() {
 }
 
 @Composable
-fun HomeNavigation(navController: NavHostController, navDirectionViewModel: NavDirectionViewModel) {
+fun HomeNavigation(navController: NavHostController, homeViewModel: HomeViewModel) {
     NavHost(navController = navController, startDestination = Contacts.route) {
         composable(
             Contacts.route,
             enterTransition = {
-                if (navDirectionViewModel.navigationDirection.value == NavigationDirection.LEFT_TO_RIGHT) {
+                if (homeViewModel.navigationDirection.value == NavigationDirection.LEFT_TO_RIGHT) {
                     slideInHorizontally(
                         initialOffsetX = { 1000 },
                         animationSpec = tween(700)
@@ -97,7 +97,7 @@ fun HomeNavigation(navController: NavHostController, navDirectionViewModel: NavD
                 }
             },
             exitTransition = {
-                if (navDirectionViewModel.navigationDirection.value == NavigationDirection.LEFT_TO_RIGHT) {
+                if (homeViewModel.navigationDirection.value == NavigationDirection.LEFT_TO_RIGHT) {
                     slideOutHorizontally(
                         targetOffsetX = { 1000 },
                         animationSpec = tween(700)
@@ -112,7 +112,7 @@ fun HomeNavigation(navController: NavHostController, navDirectionViewModel: NavD
         ) { ContactsScreen() }
         composable(Chats.route,
             enterTransition = {
-                if (navDirectionViewModel.navigationDirection.value == NavigationDirection.LEFT_TO_RIGHT) {
+                if (homeViewModel.navigationDirection.value == NavigationDirection.LEFT_TO_RIGHT) {
                     slideInHorizontally(
                         initialOffsetX = { 1000 },
                         animationSpec = tween(700)
@@ -127,7 +127,7 @@ fun HomeNavigation(navController: NavHostController, navDirectionViewModel: NavD
                 }
             },
             exitTransition = {
-                if (navDirectionViewModel.navigationDirection.value == NavigationDirection.LEFT_TO_RIGHT) {
+                if (homeViewModel.navigationDirection.value == NavigationDirection.LEFT_TO_RIGHT) {
                     slideOutHorizontally(
                         targetOffsetX = { 1000 },
                         animationSpec = tween(700)
@@ -141,7 +141,7 @@ fun HomeNavigation(navController: NavHostController, navDirectionViewModel: NavD
             }) { ChatsScreen() }
         composable(Settings.route,
             enterTransition = {
-                if (navDirectionViewModel.navigationDirection.value == NavigationDirection.LEFT_TO_RIGHT) {
+                if (homeViewModel.navigationDirection.value == NavigationDirection.LEFT_TO_RIGHT) {
                     slideInHorizontally(
                         initialOffsetX = { 1000 },
                         animationSpec = tween(700)
@@ -156,7 +156,7 @@ fun HomeNavigation(navController: NavHostController, navDirectionViewModel: NavD
                 }
             },
             exitTransition = {
-                if (navDirectionViewModel.navigationDirection.value == NavigationDirection.LEFT_TO_RIGHT) {
+                if (homeViewModel.navigationDirection.value == NavigationDirection.LEFT_TO_RIGHT) {
                     slideOutHorizontally(
                         targetOffsetX = { 1000 },
                         animationSpec = tween(700)

@@ -6,7 +6,7 @@ import com.example.chatapp.domain.model.Screen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class NavDirectionViewModel : ViewModel() {
+class HomeViewModel : ViewModel() {
 
     private val _navigationDirection = MutableStateFlow(NavigationDirection.LEFT_TO_RIGHT)
     val navigationDirection: StateFlow<NavigationDirection> = _navigationDirection
