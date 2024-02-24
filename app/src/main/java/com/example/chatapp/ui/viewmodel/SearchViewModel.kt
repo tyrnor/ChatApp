@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ContactsViewModel @Inject constructor(private val searchUserByDisplayNameUseCase: SearchUserByDisplayNameUseCase) :
+class SearchViewModel @Inject constructor(private val searchUserByDisplayNameUseCase: SearchUserByDisplayNameUseCase) :
     ViewModel() {
 
     private val _searchResults = MutableStateFlow<Result<List<UserInformation>>>(

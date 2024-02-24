@@ -31,8 +31,10 @@ class FirebaseDatabaseService {
         flow {
             val formattedQuery = FirestoreUtils.SEARCH_NAME_PATTERN.replace(query, "").lowercase(Locale.getDefault())
             val snapshot = db.collection("users")
+                .orderBy("searchName")
                 .whereGreaterThanOrEqualTo("searchName", formattedQuery)
                 .whereLessThanOrEqualTo("searchName",formattedQuery + '\uf8ff')
+                .limit(6)
                 .get()
                 .await()
             val users = snapshot.toObjects(UserInformation::class.java)

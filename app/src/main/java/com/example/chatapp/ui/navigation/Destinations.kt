@@ -15,6 +15,9 @@ object Home: Destinations {
 object Contacts : Destinations {
     override val route: String = "home/contacts"
 }
+object Search : Destinations {
+    override val route: String = "home/search"
+}
 object Chats : Destinations {
     override val route: String = "home/chats"
 }

@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.StateFlow
 
 class HomeViewModel : ViewModel() {
 
-    private val _navigationDirection = MutableStateFlow(NavigationDirection.LEFT_TO_RIGHT)
-    val navigationDirection: StateFlow<NavigationDirection> = _navigationDirection
+    private val _navigationDirection = MutableStateFlow<NavigationDirection?>(null)
+    val navigationDirection: StateFlow<NavigationDirection?> = _navigationDirection
 
     private val _lastScreen = MutableStateFlow(Screen.Contacts)
     val lastScreen: StateFlow<Screen> = _lastScreen
@@ -25,5 +25,9 @@ class HomeViewModel : ViewModel() {
             currentScreen.ordinal < targetScreen.ordinal -> NavigationDirection.LEFT_TO_RIGHT
             else -> NavigationDirection.RIGHT_TO_LEFT
         }
+    }
+
+    fun resetNavigationDirection() {
+        _navigationDirection.value = null
     }
 }
