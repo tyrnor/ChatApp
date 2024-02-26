@@ -3,8 +3,6 @@ package com.example.chatapp.ui.navigation
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -14,6 +12,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.chatapp.common.slideInFadeInFromLeft
+import com.example.chatapp.common.slideInFadeInFromRight
+import com.example.chatapp.common.slideOutFadeOutFromLeft
+import com.example.chatapp.common.slideOutFadeOutFromRight
 import com.example.chatapp.domain.model.NavigationDirection
 import com.example.chatapp.ui.view.LoginScreen
 import com.example.chatapp.ui.view.RegisterScreen
@@ -31,26 +33,18 @@ fun Navigation() {
     val authenticationViewModel: AuthenticationViewModel = hiltViewModel()
     NavHost(navController = navController, startDestination = Login.route) {
         composable(Login.route, enterTransition = {
-            slideInHorizontally(
-                initialOffsetX = { -1000 }, animationSpec = tween(700)
-            ) + fadeIn(animationSpec = tween(700))
+            slideInFadeInFromRight()
         }, exitTransition = {
-            slideOutHorizontally(
-                targetOffsetX = { -1000 }, animationSpec = tween(700)
-            ) + fadeOut(animationSpec = tween(700))
+            slideOutFadeOutFromLeft()
         }) {
             LoginScreen(
                 navController = navController, authenticationViewModel = authenticationViewModel
             )
         }
         composable(Register.route, enterTransition = {
-            slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = tween(700)) + fadeIn(
-                animationSpec = tween(700)
-            )
+            slideInFadeInFromLeft()
         }, exitTransition = {
-            slideOutHorizontally(
-                targetOffsetX = { 1000 }, animationSpec = tween(700)
-            ) + fadeOut(animationSpec = tween(700))
+            slideOutFadeOutFromRight()
         }) {
             RegisterScreen(
                 navController = navController, authenticationViewModel = authenticationViewModel
@@ -72,60 +66,35 @@ fun HomeNavigation(navController: NavHostController, homeViewModel: HomeViewMode
     NavHost(navController = navController, startDestination = Contacts.route) {
         composable(Contacts.route, enterTransition = {
             if (homeViewModel.navigationDirection.value == NavigationDirection.RIGHT_TO_LEFT) {
-                slideInHorizontally(
-                    initialOffsetX = { -1000 }, animationSpec = tween(700)
-                ) + fadeIn(
-                    animationSpec = tween(700)
-                )
+                slideInFadeInFromRight()
             } else {
                 fadeIn(animationSpec = tween(100))
             }
         }, exitTransition = {
             if (homeViewModel.navigationDirection.value == NavigationDirection.LEFT_TO_RIGHT) {
-                slideOutHorizontally(
-                    targetOffsetX = { -1000 }, animationSpec = tween(700)
-                ) + fadeOut(animationSpec = tween(700))
+                slideOutFadeOutFromLeft()
             } else {
-                slideOutHorizontally(
-                    targetOffsetX = { -1000 }, animationSpec = tween(100)
-                ) + fadeOut(animationSpec = tween(100))
+                fadeOut(animationSpec = tween(100))
             }
 
         }) { ContactsScreen(navController) }
         composable(Chats.route, enterTransition = {
             if (homeViewModel.navigationDirection.value == NavigationDirection.LEFT_TO_RIGHT) {
-                slideInHorizontally(
-                    initialOffsetX = { 1000 }, animationSpec = tween(700)
-                ) + fadeIn(
-                    animationSpec = tween(700)
-                )
+                slideInFadeInFromLeft()
             } else {
-                slideInHorizontally(
-                    initialOffsetX = { -1000 }, animationSpec = tween(700)
-                ) + fadeIn(animationSpec = tween(700))
+                slideInFadeInFromRight()
             }
         }, exitTransition = {
             if (homeViewModel.navigationDirection.value == NavigationDirection.LEFT_TO_RIGHT) {
-                slideOutHorizontally(
-                    targetOffsetX = { -1000 }, animationSpec = tween(700)
-                ) + fadeOut(animationSpec = tween(700))
+                slideOutFadeOutFromLeft()
             } else {
-                slideOutHorizontally(
-                    targetOffsetX = { 1000 }, animationSpec = tween(700)
-                ) + fadeOut(animationSpec = tween(700))
+                slideOutFadeOutFromRight()
             }
         }) { ChatsScreen() }
         composable(Settings.route, enterTransition = {
-            slideInHorizontally(
-                initialOffsetX = { 1000 }, animationSpec = tween(700)
-            ) + fadeIn(
-                animationSpec = tween(700)
-            )
+            slideInFadeInFromLeft()
         }, exitTransition = {
-            slideOutHorizontally(
-                targetOffsetX = { 1000 }, animationSpec = tween(700)
-            ) + fadeOut(animationSpec = tween(700))
-
+            slideOutFadeOutFromRight()
         }) { SettingsScreen() }
         composable(Search.route,
             enterTransition = {
