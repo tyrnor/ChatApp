@@ -3,8 +3,10 @@ package com.example.chatapp.ui.navigation
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -17,6 +19,7 @@ import com.example.chatapp.common.slideInFadeInFromRight
 import com.example.chatapp.common.slideOutFadeOutFromLeft
 import com.example.chatapp.common.slideOutFadeOutFromRight
 import com.example.chatapp.domain.model.NavigationDirection
+import com.example.chatapp.ui.theme.AppTheme
 import com.example.chatapp.ui.view.LoginScreen
 import com.example.chatapp.ui.view.RegisterScreen
 import com.example.chatapp.ui.view.home.ChatsScreen
@@ -63,7 +66,13 @@ fun Navigation() {
 
 @Composable
 fun HomeNavigation(navController: NavHostController, homeViewModel: HomeViewModel) {
-    NavHost(navController = navController, startDestination = Contacts.route) {
+    NavHost(
+        navController = navController,
+        startDestination = Contacts.route,
+        modifier = Modifier.background(
+            AppTheme.colorScheme.background
+        )
+    ) {
         composable(Contacts.route, enterTransition = {
             if (homeViewModel.navigationDirection.value == NavigationDirection.RIGHT_TO_LEFT) {
                 slideInFadeInFromRight()

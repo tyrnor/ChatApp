@@ -1,6 +1,5 @@
 package com.example.chatapp.ui.view.home
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.BasicTextField
@@ -29,24 +29,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.chatapp.common.keyboardAsState
 import com.example.chatapp.ui.navigation.Contacts
 import com.example.chatapp.ui.theme.AppTheme
+import com.example.chatapp.ui.theme.DarkGrey
 import com.example.chatapp.ui.viewmodel.SearchViewModel
 
-@OptIn(ExperimentalComposeUiApi::class)
+
 @Composable
 fun SearchScreen(navController: NavController) {
     val searchViewModel: SearchViewModel = hiltViewModel()
@@ -65,25 +67,30 @@ fun SearchScreen(navController: NavController) {
     val isKeyboardOpen by keyboardAsState()
     if (!isKeyboardOpen) focusManager.clearFocus()
 
-    Column(modifier = Modifier
-        .padding(AppTheme.size.medium)
-        .fillMaxSize()) {
-        Row (modifier = Modifier
-            .height(41.dp)
-            .fillMaxWidth()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppTheme.colorScheme.background)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(AppTheme.size.medium)
+                .height(41.dp)
+                .fillMaxWidth()
+        ) {
             Row(
                 modifier = Modifier
                     .clip(AppTheme.shape.button)
-                    .background(AppTheme.colorScheme.primary)
-                    .weight(0.85f)
-                    ,
+                    .shadow(elevation = AppTheme.size.large, shape = AppTheme.shape.button)
+                    .background(AppTheme.colorScheme.background)
+                    .weight(0.85f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = Icons.Filled.Search,
                     contentDescription = "search",
-                    tint = AppTheme.colorScheme.onPrimary,
-                    modifier = Modifier.padding(start = AppTheme.size.normal)
+                    tint = DarkGrey,
+                    modifier = Modifier.padding(horizontal = AppTheme.size.normal)
                 )
                 BasicTextField(
                     value = searchQuery,
@@ -91,8 +98,7 @@ fun SearchScreen(navController: NavController) {
                     singleLine = true,
                     maxLines = 1,
                     modifier = Modifier
-                        .focusRequester(focusRequester)
-                    ,
+                        .focusRequester(focusRequester),
                     decorationBox = { innerTextField ->
                         Box(
                             contentAlignment = Alignment.CenterStart,
@@ -102,22 +108,30 @@ fun SearchScreen(navController: NavController) {
                             if (searchQuery.isEmpty()) {
                                 Text(
                                     "Search",
-                                    style = AppTheme.typography.labelNormal,
-                                    color = AppTheme.colorScheme.onPrimary
+                                    style = AppTheme.typography.labelLarge,
+                                    color = DarkGrey
                                 )
                             }
                             innerTextField()
                         }
                     },
-                    textStyle = AppTheme.typography.labelNormal.copy(color = AppTheme.colorScheme.onPrimary),
-                    cursorBrush = SolidColor(AppTheme.colorScheme.onPrimary),
+                    textStyle = AppTheme.typography.labelLarge.copy(color = AppTheme.colorScheme.onBackground),
+                    cursorBrush = SolidColor(AppTheme.colorScheme.onBackground),
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() })
                 )
             }
-            Text(text = "Cancel", modifier = Modifier.clickable { navController.navigate(Contacts.route) })
+            Text(text = "Cancel",
+                modifier = Modifier
+                    .clickable { navController.navigate(Contacts.route) }
+                    .align(Alignment.CenterVertically)
+                    .padding(start = AppTheme.size.small),
+                textAlign = TextAlign.Center,
+                style = AppTheme.typography.labelLarge,
+                color = AppTheme.colorScheme.primary
+            )
         }
-        
+
 
         UserList(query = searchQuery, viewModel = searchViewModel)
     }

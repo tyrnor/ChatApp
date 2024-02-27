@@ -81,7 +81,7 @@ fun LoginRegisterButton(
                 modifier = Modifier.size(AppTheme.size.medium)
             )
         } else {
-            Text(text = text)
+            Text(text = text, style = AppTheme.typography.labelLarge)
         }
     }
 }

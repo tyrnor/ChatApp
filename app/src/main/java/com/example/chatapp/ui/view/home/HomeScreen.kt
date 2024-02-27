@@ -2,6 +2,7 @@ package com.example.chatapp.ui.view.home
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Chat
@@ -23,6 +24,7 @@ import com.example.chatapp.ui.composables.BottomNavigationBar
 import com.example.chatapp.ui.navigation.HomeNavigation
 import com.example.chatapp.ui.navigation.Search
 import com.example.chatapp.ui.navigation.isCurrentRoute
+import com.example.chatapp.ui.theme.AppTheme
 import com.example.chatapp.ui.viewmodel.AuthenticationViewModel
 import com.example.chatapp.ui.viewmodel.HomeViewModel
 
@@ -58,10 +60,16 @@ fun HomeScreen(authenticationViewModel: AuthenticationViewModel) {
     )
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppTheme.colorScheme.background),
         bottomBar = {
-            if(!homeNavController.isCurrentRoute(Search.route)) {
-                BottomNavigationBar(items = items, navController = homeNavController, homeViewModel = homeViewModel)
+            if (!homeNavController.isCurrentRoute(Search.route)) {
+                BottomNavigationBar(
+                    items = items,
+                    navController = homeNavController,
+                    homeViewModel = homeViewModel
+                )
             }
         }
     ) {

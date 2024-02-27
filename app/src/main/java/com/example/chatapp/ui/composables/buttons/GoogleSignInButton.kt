@@ -41,6 +41,6 @@ fun GoogleSignInButton() {
             modifier = Modifier.size(AppTheme.size.large)
         )
         Spacer(modifier = Modifier.size(AppTheme.size.small))
-        Text(text = "Continue with Google")
+        Text(text = "Continue with Google", style = AppTheme.typography.labelLarge)
     }
 }
