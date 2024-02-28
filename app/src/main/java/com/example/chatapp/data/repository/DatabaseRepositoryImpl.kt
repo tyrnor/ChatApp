@@ -1,5 +1,6 @@
 package com.example.chatapp.data.repository
 
+import com.example.chatapp.data.model.ContactInformation
 import com.example.chatapp.data.model.UserInformation
 import com.example.chatapp.data.source.remote.FirebaseDatabaseService
 import com.example.chatapp.domain.repository.DatabaseRepository
@@ -10,6 +11,14 @@ class DatabaseRepositoryImpl @Inject constructor(private val databaseService: Fi
     DatabaseRepository {
     override suspend fun addUser(uid: String, userInfo: UserInformation): Result<Unit> {
         return databaseService.addUser(uid, userInfo)
+    }
+
+    override suspend fun addContact(
+        uid: String,
+        cid: String,
+        contactInformation: ContactInformation,
+    ): Result<Unit> {
+        return databaseService.addContact(uid, cid, contactInformation)
     }
 
     override suspend fun searchUsersByDisplayName(query: String): Flow<Result<List<UserInformation>>> {

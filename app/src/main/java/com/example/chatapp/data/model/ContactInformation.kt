@@ -1,8 +1,9 @@
 package com.example.chatapp.data.model
 
-data class UserInformation(
-    val uid: String = "",
+import java.sql.Timestamp
+
+data class ContactInformation(
     val displayName: String = "",
     val email: String = "",
-    val searchName: String  = ""
+    val addedAt: Timestamp,
 )

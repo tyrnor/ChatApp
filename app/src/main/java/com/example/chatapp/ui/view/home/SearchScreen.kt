@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.BasicTextField
@@ -36,13 +35,13 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.chatapp.common.keyboardAsState
+import com.example.chatapp.data.model.AuthenticatedUser
 import com.example.chatapp.ui.navigation.Contacts
 import com.example.chatapp.ui.theme.AppTheme
 import com.example.chatapp.ui.theme.DarkGrey
@@ -50,7 +49,7 @@ import com.example.chatapp.ui.viewmodel.SearchViewModel
 
 
 @Composable
-fun SearchScreen(navController: NavController) {
+fun SearchScreen(navController: NavController, user: AuthenticatedUser?) {
     val searchViewModel: SearchViewModel = hiltViewModel()
 
     var searchQuery by rememberSaveable {
@@ -60,8 +59,9 @@ fun SearchScreen(navController: NavController) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(Unit) {
+    val uid = user?.userId
 
+    LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
     val isKeyboardOpen by keyboardAsState()
@@ -133,12 +133,12 @@ fun SearchScreen(navController: NavController) {
         }
 
 
-        UserList(query = searchQuery, viewModel = searchViewModel)
+        UserList(query = searchQuery, viewModel = searchViewModel, uid = uid ?: "")
     }
 }
 
 @Composable
-fun UserList(query: String, viewModel: SearchViewModel) {
+fun UserList(query: String, viewModel: SearchViewModel, uid: String) {
     LaunchedEffect(query) {
         viewModel.searchUsers(query)
     }
@@ -150,7 +150,11 @@ fun UserList(query: String, viewModel: SearchViewModel) {
             val users = searchResults.getOrNull() ?: emptyList()
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(items = users) { user ->
-                    Text(text = user.displayName)
+                    if (user.uid != uid) {
+                        Text(text = user.displayName, modifier = Modifier.clickable {
+                            viewModel.addContact(uid, user)
+                        })
+                    }
                 }
             }
 

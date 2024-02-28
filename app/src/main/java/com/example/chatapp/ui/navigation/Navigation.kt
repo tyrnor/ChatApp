@@ -18,6 +18,7 @@ import com.example.chatapp.common.slideInFadeInFromLeft
 import com.example.chatapp.common.slideInFadeInFromRight
 import com.example.chatapp.common.slideOutFadeOutFromLeft
 import com.example.chatapp.common.slideOutFadeOutFromRight
+import com.example.chatapp.data.model.AuthenticatedUser
 import com.example.chatapp.domain.model.NavigationDirection
 import com.example.chatapp.ui.theme.AppTheme
 import com.example.chatapp.ui.view.LoginScreen
@@ -65,7 +66,11 @@ fun Navigation() {
 }
 
 @Composable
-fun HomeNavigation(navController: NavHostController, homeViewModel: HomeViewModel) {
+fun HomeNavigation(
+    navController: NavHostController,
+    homeViewModel: HomeViewModel,
+    user: AuthenticatedUser?
+) {
     NavHost(
         navController = navController,
         startDestination = Contacts.route,
@@ -111,7 +116,7 @@ fun HomeNavigation(navController: NavHostController, homeViewModel: HomeViewMode
             },
             exitTransition = { fadeOut(animationSpec = tween(100)) })
         {
-            SearchScreen(navController)
+            SearchScreen(navController, user)
             homeViewModel.resetNavigationDirection()
         }
     }

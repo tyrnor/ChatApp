@@ -1,7 +1,6 @@
 package com.example.chatapp.ui.view.home
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
@@ -73,6 +72,6 @@ fun HomeScreen(authenticationViewModel: AuthenticationViewModel) {
             }
         }
     ) {
-        HomeNavigation(homeNavController, homeViewModel)
+        HomeNavigation(homeNavController, homeViewModel, user)
     }
 }
