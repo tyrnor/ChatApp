@@ -43,6 +43,16 @@ class FirebaseDatabaseService {
         }
     }
 
+    suspend fun getUserById(uid: String) : Result<UserInformation> {
+        return try {
+            val documentSnapshot = db.collection("users").document(uid).get().await()
+            val user = documentSnapshot.toObject(UserInformation::class.java) ?: UserInformation()
+            Result.success(user)
+        } catch (e: Exception){
+            Result.failure(e)
+        }
+    }
+
     suspend fun searchUsersByDisplayName(query: String): Flow<Result<List<UserInformation>>> =
         flow {
             val formattedQuery =
@@ -61,4 +71,6 @@ class FirebaseDatabaseService {
         }.catch { e ->
             emit(Result.failure(e))
         }
+
+
 }

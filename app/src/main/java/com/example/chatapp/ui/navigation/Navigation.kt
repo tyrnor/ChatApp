@@ -10,10 +10,12 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.chatapp.common.slideInFadeInFromLeft
 import com.example.chatapp.common.slideInFadeInFromRight
 import com.example.chatapp.common.slideOutFadeOutFromLeft
@@ -23,6 +25,7 @@ import com.example.chatapp.domain.model.NavigationDirection
 import com.example.chatapp.ui.theme.AppTheme
 import com.example.chatapp.ui.view.LoginScreen
 import com.example.chatapp.ui.view.RegisterScreen
+import com.example.chatapp.ui.view.home.ChatScreen
 import com.example.chatapp.ui.view.home.ChatsScreen
 import com.example.chatapp.ui.view.home.ContactsScreen
 import com.example.chatapp.ui.view.home.HomeScreen
@@ -69,7 +72,7 @@ fun Navigation() {
 fun HomeNavigation(
     navController: NavHostController,
     homeViewModel: HomeViewModel,
-    user: AuthenticatedUser?
+    user: AuthenticatedUser?,
 ) {
     NavHost(
         navController = navController,
@@ -117,6 +120,15 @@ fun HomeNavigation(
             exitTransition = { fadeOut(animationSpec = tween(100)) })
         {
             SearchScreen(navController, user)
+            homeViewModel.resetNavigationDirection()
+        }
+        composable(
+            Chat.route + "/{userId}",
+            arguments = listOf(navArgument("userId") {
+                type = NavType.StringType
+            })
+        ) {
+            ChatScreen(userId = it.arguments?.getString("userId") ?: "")
             homeViewModel.resetNavigationDirection()
         }
     }

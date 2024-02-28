@@ -20,6 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.domain.model.BottomNavigationItem
 import com.example.chatapp.ui.composables.BottomNavigationBar
+import com.example.chatapp.ui.navigation.Chat
 import com.example.chatapp.ui.navigation.HomeNavigation
 import com.example.chatapp.ui.navigation.Search
 import com.example.chatapp.ui.navigation.isCurrentRoute
@@ -63,7 +64,7 @@ fun HomeScreen(authenticationViewModel: AuthenticationViewModel) {
             .fillMaxSize()
             .background(AppTheme.colorScheme.background),
         bottomBar = {
-            if (!homeNavController.isCurrentRoute(Search.route)) {
+            if (!homeNavController.isCurrentRoute(Search.route) && !homeNavController.isCurrentRoute(Chat.route+"/")) {
                 BottomNavigationBar(
                     items = items,
                     navController = homeNavController,

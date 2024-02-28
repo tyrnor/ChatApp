@@ -42,6 +42,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.chatapp.common.keyboardAsState
 import com.example.chatapp.data.model.AuthenticatedUser
+import com.example.chatapp.ui.navigation.Chat
 import com.example.chatapp.ui.navigation.Contacts
 import com.example.chatapp.ui.theme.AppTheme
 import com.example.chatapp.ui.theme.DarkGrey
@@ -133,12 +134,12 @@ fun SearchScreen(navController: NavController, user: AuthenticatedUser?) {
         }
 
 
-        UserList(query = searchQuery, viewModel = searchViewModel, uid = uid ?: "")
+        UserList(query = searchQuery, viewModel = searchViewModel, uid = uid ?: "", navController = navController)
     }
 }
 
 @Composable
-fun UserList(query: String, viewModel: SearchViewModel, uid: String) {
+fun UserList(query: String, viewModel: SearchViewModel, uid: String, navController: NavController) {
     LaunchedEffect(query) {
         viewModel.searchUsers(query)
     }
@@ -152,7 +153,7 @@ fun UserList(query: String, viewModel: SearchViewModel, uid: String) {
                 items(items = users) { user ->
                     if (user.uid != uid) {
                         Text(text = user.displayName, modifier = Modifier.clickable {
-                            viewModel.addContact(uid, user)
+                            navController.navigate(Chat.route + "/${user.uid}")
                         })
                     }
                 }

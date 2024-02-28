@@ -9,10 +9,12 @@ import androidx.compose.ui.Modifier
 import com.example.chatapp.ui.theme.AppTheme
 
 @Composable
-fun ChatsScreen() {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .background(AppTheme.colorScheme.background)) {
-        Text(text = "Chats")
+fun ChatScreen(userId: String){
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppTheme.colorScheme.background)
+    ){
+         Text(text = userId)
     }
 }

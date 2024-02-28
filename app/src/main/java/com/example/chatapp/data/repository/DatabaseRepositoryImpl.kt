@@ -21,6 +21,10 @@ class DatabaseRepositoryImpl @Inject constructor(private val databaseService: Fi
         return databaseService.addContact(uid, cid, contactInformation)
     }
 
+    override suspend fun getUserById(uid: String): Result<UserInformation> {
+        return databaseService.getUserById(uid)
+    }
+
     override suspend fun searchUsersByDisplayName(query: String): Flow<Result<List<UserInformation>>> {
         return databaseService.searchUsersByDisplayName(query)
     }
