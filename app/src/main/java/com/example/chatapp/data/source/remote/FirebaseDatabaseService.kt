@@ -2,7 +2,7 @@ package com.example.chatapp.data.source.remote
 
 import com.example.chatapp.data.model.ContactInformation
 import com.example.chatapp.data.model.UserInformation
-import com.example.chatapp.data.utils.FirestoreUtils
+import com.example.chatapp.common.FirestoreUtils
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.Flow
