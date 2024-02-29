@@ -128,7 +128,7 @@ fun HomeNavigation(
                 type = NavType.StringType
             })
         ) {
-            ChatScreen(userId = it.arguments?.getString("userId") ?: "")
+            ChatScreen(userId = it.arguments?.getString("userId") ?: "", navController)
             homeViewModel.resetNavigationDirection()
         }
     }
