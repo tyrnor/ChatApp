@@ -97,7 +97,6 @@ fun SearchScreen(navController: NavController, user: AuthenticatedUser?) {
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
                     singleLine = true,
-                    maxLines = 1,
                     modifier = Modifier
                         .focusRequester(focusRequester),
                     decorationBox = { innerTextField ->
@@ -105,6 +104,7 @@ fun SearchScreen(navController: NavController, user: AuthenticatedUser?) {
                             contentAlignment = Alignment.CenterStart,
                             modifier = Modifier
                                 .fillMaxHeight()
+                                .fillMaxWidth()
                         ) {
                             if (searchQuery.isEmpty()) {
                                 Text(
