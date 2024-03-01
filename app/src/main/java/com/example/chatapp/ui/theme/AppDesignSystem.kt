@@ -16,7 +16,10 @@ data class AppColorScheme(
     val secondary: Color,
     val onSecondary: Color,
     val icons : Color,
-    val error : Color
+    val error : Color,
+    val chatBackground: Color,
+    val chatText: Color,
+    val chatContainer: Color,
 )
 
 //typography
@@ -50,7 +53,10 @@ val LocalAppColorScheme = staticCompositionLocalOf {
         secondary = Color.Unspecified,
         onSecondary = Color.Unspecified,
         icons = Color.Unspecified,
-        error = Color.Unspecified
+        error = Color.Unspecified,
+        chatBackground = Color.Unspecified,
+        chatText = Color.Unspecified,
+        chatContainer = Color.Unspecified
     )
 }
 

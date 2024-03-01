@@ -4,19 +4,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIos
-import androidx.compose.material.icons.filled.ArrowCircleUp
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,10 +31,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -44,9 +42,13 @@ import androidx.navigation.NavController
 import com.example.chatapp.common.keyboardAsState
 import com.example.chatapp.data.model.UserInformation
 import com.example.chatapp.ui.composables.HomeTopBar
+import com.example.chatapp.ui.composables.MessageContainer
 import com.example.chatapp.ui.theme.AppTheme
 import com.example.chatapp.ui.theme.DarkGrey
 import com.example.chatapp.ui.theme.Grey
+import com.example.chatapp.ui.theme.LightGrey
+import com.example.chatapp.ui.theme.Purple2
+import com.example.chatapp.ui.theme.PurpleGrey
 import com.example.chatapp.ui.viewmodel.ChatViewModel
 
 
@@ -137,7 +139,7 @@ fun ChatScreen(userId: String, navController: NavController) {
                                     .align(Alignment.CenterVertically)
                                     .padding(start = AppTheme.size.small)
                                     .size(24.dp)
-                                    .clickable {  }
+                                    .clickable { }
                             )
 
                         }
@@ -146,10 +148,24 @@ fun ChatScreen(userId: String, navController: NavController) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(AppTheme.colorScheme.background)
                             .padding(paddingValues)
+                            .background(AppTheme.colorScheme.chatBackground)
                     ) {
-                        Text(text = "test")
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(AppTheme.size.small)
+                        ) {
+                            MessageContainer(
+                                modifier = Modifier
+                                    .align(Alignment.End), Purple2
+                            )
+                            Spacer(modifier = Modifier.size(20.dp))
+                            MessageContainer(
+                                modifier = Modifier.align(Alignment.Start),
+                                AppTheme.colorScheme.chatContainer
+                            )
+                        }
                     }
                 }
             }

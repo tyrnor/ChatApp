@@ -19,7 +19,10 @@ private val darkColorScheme = AppColorScheme(
     secondary = LightGrey,
     onSecondary = Black,
     icons = White,
-    error = Red
+    error = Red,
+    chatBackground = Black,
+    chatText = White,
+    chatContainer = Grey
 )
 
 private val lightColorScheme = AppColorScheme(
@@ -30,7 +33,10 @@ private val lightColorScheme = AppColorScheme(
     secondary = LightGrey,
     onSecondary = Black,
     icons = Black,
-    error = Red
+    error = Red,
+    chatBackground = LightGrey,
+    chatText = Black,
+    chatContainer = White
 )
 
 private val typography = AppTypography(
