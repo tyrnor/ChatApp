@@ -3,9 +3,14 @@ package com.example.chatapp.data.source.remote
 import com.example.chatapp.data.model.ContactInformation
 import com.example.chatapp.data.model.UserInformation
 import com.example.chatapp.common.FirestoreUtils
+import com.example.chatapp.data.model.Message
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
@@ -96,6 +101,21 @@ class FirebaseDatabaseService {
         }
     }
 
+    suspend fun listenForMessages(chatId: String): Flow<List<Message>> = callbackFlow {
+        val messagesRef = db.collection("chats").document(chatId).collection("messages")
+            .orderBy("timestamp", Query.Direction.ASCENDING)
+        val subscription = messagesRef.addSnapshotListener { value, error ->
 
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+
+            val messages = value?.documents?.mapNotNull { it.toObject<Message>() }.orEmpty()
+            trySend(messages)
+        }
+
+        awaitClose { subscription.remove() }
+    }
 
 }
