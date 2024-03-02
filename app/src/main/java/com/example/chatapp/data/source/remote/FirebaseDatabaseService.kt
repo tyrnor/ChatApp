@@ -43,12 +43,12 @@ class FirebaseDatabaseService {
         }
     }
 
-    suspend fun getUserById(uid: String) : Result<UserInformation> {
+    suspend fun getUserById(uid: String): Result<UserInformation> {
         return try {
             val documentSnapshot = db.collection("users").document(uid).get().await()
             val user = documentSnapshot.toObject(UserInformation::class.java) ?: UserInformation()
             Result.success(user)
-        } catch (e: Exception){
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }
@@ -65,12 +65,35 @@ class FirebaseDatabaseService {
                 .get()
                 .await()
             val users = snapshot.documents.map { document ->
-                document.toObject(UserInformation::class.java)?.copy(uid = document.id) ?: UserInformation()
+                document.toObject(UserInformation::class.java)?.copy(uid = document.id)
+                    ?: UserInformation()
             }
             emit(Result.success(users))
         }.catch { e ->
             emit(Result.failure(e))
         }
 
+    suspend fun findOrCreateChat(currentUserId: String, otherUserId: String): Result<String> {
+        val chatsCollection = db.collection("chats")
+
+        return try {
+            val existingChat = chatsCollection
+                .whereArrayContains("participantsIds", currentUserId)
+                .whereArrayContains("participantsIds", otherUserId)
+                .get()
+                .await()
+
+            if (!existingChat.isEmpty) {
+                Result.success(existingChat.documents.first().id)
+            } else {
+                val newChatData =
+                    hashMapOf("participantsIds" to listOf(currentUserId, otherUserId).sorted())
+                val newChatDocument = chatsCollection.add(newChatData).await()
+                Result.success(newChatDocument.id)
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 
 }
