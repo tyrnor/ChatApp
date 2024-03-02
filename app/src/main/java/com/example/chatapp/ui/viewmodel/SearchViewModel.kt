@@ -6,6 +6,7 @@ import com.example.chatapp.data.model.ContactInformation
 import com.example.chatapp.data.model.UserInformation
 import com.example.chatapp.domain.usecase.database.AddContactUseCase
 import com.example.chatapp.domain.usecase.database.SearchUserByDisplayNameUseCase
+import com.google.firebase.Timestamp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -44,7 +45,7 @@ class SearchViewModel @Inject constructor(
             val contactInformation = ContactInformation(
                 userInformation.displayName,
                 userInformation.email,
-                java.sql.Timestamp(System.currentTimeMillis())
+                Timestamp.now()
             )
             viewModelScope.launch {
                 addContactUseCase(uid, cid, contactInformation)

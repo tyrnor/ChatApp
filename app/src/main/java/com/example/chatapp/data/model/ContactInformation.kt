@@ -1,6 +1,7 @@
 package com.example.chatapp.data.model
 
-import java.sql.Timestamp
+import com.google.firebase.Timestamp
+
 
 data class ContactInformation(
     val displayName: String = "",
