@@ -1,6 +1,7 @@
 package com.example.chatapp.domain.repository
 
 import com.example.chatapp.data.model.ContactInformation
+import com.example.chatapp.data.model.Message
 import com.example.chatapp.data.model.UserInformation
 import kotlinx.coroutines.flow.Flow
 
@@ -10,4 +11,5 @@ interface DatabaseRepository {
     suspend fun getUserById(uid: String): Result<UserInformation>
     suspend fun searchUsersByDisplayName(query: String): Flow<Result<List<UserInformation>>>
     suspend fun findOrCreateChat(currentUserId: String, otherUserId: String): Result<String>
+    suspend fun listenForMessages(chatId: String): Flow<List<Message>>
 }
