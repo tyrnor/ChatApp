@@ -9,4 +9,5 @@ interface DatabaseRepository {
     suspend fun addContact(uid: String, cid: String, contactInformation: ContactInformation): Result<Unit>
     suspend fun getUserById(uid: String): Result<UserInformation>
     suspend fun searchUsersByDisplayName(query: String): Flow<Result<List<UserInformation>>>
+    suspend fun findOrCreateChat(currentUserId: String, otherUserId: String): Result<String>
 }
