@@ -1,6 +1,7 @@
 package com.example.chatapp.data.repository
 
 import com.example.chatapp.data.model.ContactInformation
+import com.example.chatapp.data.model.Message
 import com.example.chatapp.data.model.UserInformation
 import com.example.chatapp.data.source.remote.FirebaseDatabaseService
 import com.example.chatapp.domain.repository.DatabaseRepository
@@ -34,6 +35,10 @@ class DatabaseRepositoryImpl @Inject constructor(private val databaseService: Fi
         otherUserId: String,
     ): Result<String> {
         return databaseService.findOrCreateChat(currentUserId, otherUserId)
+    }
+
+    override suspend fun listenForMessages(chatId: String): Flow<List<Message>> {
+        return databaseService.listenForMessages(chatId)
     }
 
 }
