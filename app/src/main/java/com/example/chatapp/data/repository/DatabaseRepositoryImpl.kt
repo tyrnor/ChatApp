@@ -29,4 +29,11 @@ class DatabaseRepositoryImpl @Inject constructor(private val databaseService: Fi
         return databaseService.searchUsersByDisplayName(query)
     }
 
+    override suspend fun findOrCreateChat(
+        currentUserId: String,
+        otherUserId: String,
+    ): Result<String> {
+        return databaseService.findOrCreateChat(currentUserId, otherUserId)
+    }
+
 }
