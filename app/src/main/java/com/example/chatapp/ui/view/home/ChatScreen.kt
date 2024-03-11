@@ -1,5 +1,6 @@
 package com.example.chatapp.ui.view.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,8 +32,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
@@ -40,27 +39,28 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.chatapp.common.keyboardAsState
+import com.example.chatapp.data.model.AuthenticatedUser
 import com.example.chatapp.data.model.UserInformation
 import com.example.chatapp.ui.composables.HomeTopBar
 import com.example.chatapp.ui.composables.MessageContainer
 import com.example.chatapp.ui.theme.AppTheme
 import com.example.chatapp.ui.theme.DarkGrey
 import com.example.chatapp.ui.theme.Grey
-import com.example.chatapp.ui.theme.LightGrey
 import com.example.chatapp.ui.theme.Purple2
-import com.example.chatapp.ui.theme.PurpleGrey
 import com.example.chatapp.ui.viewmodel.ChatViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(userId: String, navController: NavController) {
+fun ChatScreen(otherUserId: String, navController: NavController, currentUser: AuthenticatedUser?) {
 
     val chatViewModel: ChatViewModel = hiltViewModel()
     val userInformationResult by chatViewModel.userInformation.collectAsState()
+    val chatId by chatViewModel.chatId.collectAsState()
 
-    LaunchedEffect(userId) {
-        chatViewModel.fetchUserById(userId)
+    LaunchedEffect(otherUserId) {
+        chatViewModel.fetchUserById(otherUserId)
+        chatViewModel.getChatId(currentUser!!.userId, otherUserId)
     }
 
     var message by rememberSaveable {
@@ -75,7 +75,8 @@ fun ChatScreen(userId: String, navController: NavController) {
     when {
         userInformationResult.isSuccess -> {
             val user = userInformationResult.getOrDefault(UserInformation())
-            if (user != null) {
+            if (user != null && chatId != null) {
+                Log.d("TAG", "ChatScreen: $chatId")
                 Scaffold(
                     modifier = Modifier.background(AppTheme.colorScheme.background),
                     topBar = {

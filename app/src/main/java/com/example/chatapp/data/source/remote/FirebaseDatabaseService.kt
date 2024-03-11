@@ -52,6 +52,7 @@ class FirebaseDatabaseService {
         return try {
             val documentSnapshot = db.collection("users").document(uid).get().await()
             val user = documentSnapshot.toObject(UserInformation::class.java) ?: UserInformation()
+            user.uid = uid
             Result.success(user)
         } catch (e: Exception) {
             Result.failure(e)
@@ -80,19 +81,24 @@ class FirebaseDatabaseService {
 
     suspend fun findOrCreateChat(currentUserId: String, otherUserId: String): Result<String> {
         val chatsCollection = db.collection("chats")
+        // Ensure the IDs are in a consistent order to create a deterministic key
+        val participantsKey = listOf(currentUserId, otherUserId).sorted().joinToString("-")
 
         return try {
-            val existingChat = chatsCollection
-                .whereArrayContains("participantsIds", currentUserId)
-                .whereArrayContains("participantsIds", otherUserId)
+            val existingChatQuery = chatsCollection
+                .whereEqualTo("participantsKey", participantsKey)
                 .get()
                 .await()
 
-            if (!existingChat.isEmpty) {
-                Result.success(existingChat.documents.first().id)
+            if (existingChatQuery.documents.isNotEmpty()) {
+                // Chat already exists
+                Result.success(existingChatQuery.documents.first().id)
             } else {
-                val newChatData =
-                    hashMapOf("participantsIds" to listOf(currentUserId, otherUserId).sorted())
+                // No existing chat found; create a new one
+                val newChatData = hashMapOf(
+                    "participantsIds" to listOf(currentUserId, otherUserId).sorted(),
+                    "participantsKey" to participantsKey  // Store the composite key
+                )
                 val newChatDocument = chatsCollection.add(newChatData).await()
                 Result.success(newChatDocument.id)
             }
