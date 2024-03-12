@@ -1,8 +1,8 @@
 package com.example.chatapp.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.chatapp.data.model.Message
 import com.example.chatapp.data.model.UserInformation
 import com.example.chatapp.domain.usecase.database.FindOrCreateChatUseCase
 import com.example.chatapp.domain.usecase.database.GetUserByIdUseCase
@@ -25,6 +25,8 @@ class ChatViewModel @Inject constructor(
     private val _chatId = MutableStateFlow<String?>(null)
     val chatId: StateFlow<String?> = _chatId
 
+    private val _messages = MutableStateFlow<List<Message>>(emptyList())
+    val messages: StateFlow<List<Message>> = _messages
     fun fetchUserById(uid: String) {
         viewModelScope.launch {
             val result = getUserByIdUseCase(uid)
@@ -42,6 +44,14 @@ class ChatViewModel @Inject constructor(
                 result.isFailure -> {
                     _chatId.value = null
                 }
+            }
+        }
+    }
+
+    fun listenForMessages(chatId: String) {
+        viewModelScope.launch {
+            listenForMessagesUseCase(chatId).collect {messagesList ->
+                _messages.value = messagesList
             }
         }
     }

@@ -3,8 +3,10 @@ package com.example.chatapp.ui.composables
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -12,22 +14,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.example.chatapp.ui.theme.AppTheme
 import com.example.chatapp.ui.theme.HardDarkGrey
 
 
 @Composable
-fun MessageContainer(modifier: Modifier, color: Color) {
+fun MessageContainer(
+    modifier: Modifier = Modifier,
+    alignment: Alignment.Horizontal = Alignment.Start,
+    color: Color,
+    text: String) {
     Box(
+        contentAlignment = Alignment.CenterStart,
         modifier = modifier
             .clip(AppTheme.shape.container)
-            .fillMaxWidth(0.9f)
+            .defaultMinSize(minWidth = 75.dp)
             .background(color)
     ) {
-        Column {
-
+        Column(Modifier.defaultMinSize(minWidth = 75.dp)) {
             Text(
-                text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ex est, elementum ac consectetur sed, ultricies vel tortor. Nulla aliquet nibh nec mi ullamcorper venenatis. Sed commodo purus nec consequat ullamcorper. Pellentesque quis euismod nisi. Donec scelerisque arcu vitae pharetra vestibulum. Sed lobortis magna sed commodo dapibus.",
+                text = text,
                 color = AppTheme.colorScheme.chatText,
                 style = AppTheme.typography.labelNormal,
                 modifier = Modifier.padding(

@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -32,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
@@ -57,10 +60,17 @@ fun ChatScreen(otherUserId: String, navController: NavController, currentUser: A
     val chatViewModel: ChatViewModel = hiltViewModel()
     val userInformationResult by chatViewModel.userInformation.collectAsState()
     val chatId by chatViewModel.chatId.collectAsState()
+    val messages by chatViewModel.messages.collectAsState()
 
     LaunchedEffect(otherUserId) {
         chatViewModel.fetchUserById(otherUserId)
         chatViewModel.getChatId(currentUser!!.userId, otherUserId)
+    }
+
+    LaunchedEffect(chatId) {
+        chatId?.let {
+            chatViewModel.listenForMessages(it)
+        }
     }
 
     var message by rememberSaveable {
@@ -152,20 +162,30 @@ fun ChatScreen(otherUserId: String, navController: NavController, currentUser: A
                             .padding(paddingValues)
                             .background(AppTheme.colorScheme.chatBackground)
                     ) {
-                        Column(
+                        LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(AppTheme.size.small)
                         ) {
-                            MessageContainer(
-                                modifier = Modifier
-                                    .align(Alignment.End), Purple2
-                            )
-                            Spacer(modifier = Modifier.size(20.dp))
-                            MessageContainer(
-                                modifier = Modifier.align(Alignment.Start),
-                                AppTheme.colorScheme.chatContainer
-                            )
+                            items(messages) { message ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = AppTheme.size.small),
+                                    horizontalArrangement = if (message.senderId == currentUser?.userId) Arrangement.End else Arrangement.Start
+                                ) {
+                                    MessageContainer(
+                                        modifier = if (message.senderId == currentUser?.userId) Modifier.padding(
+                                            start = AppTheme.size.large
+                                        ) else Modifier.padding(end = AppTheme.size.large),
+                                        alignment = if (message.senderId == currentUser?.userId) Alignment.End else Alignment.Start,
+                                        color = if (message.senderId == currentUser?.userId) Purple2 else AppTheme.colorScheme.chatContainer,
+                                        text = message.text
+                                    )
+
+                                }
+                                Spacer(modifier = Modifier.size(20.dp))
+                            }
                         }
                     }
                 }
