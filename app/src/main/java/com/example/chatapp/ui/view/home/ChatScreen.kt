@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,7 +33,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
@@ -178,7 +176,6 @@ fun ChatScreen(otherUserId: String, navController: NavController, currentUser: A
                                         modifier = if (message.senderId == currentUser?.userId) Modifier.padding(
                                             start = AppTheme.size.large
                                         ) else Modifier.padding(end = AppTheme.size.large),
-                                        alignment = if (message.senderId == currentUser?.userId) Alignment.End else Alignment.Start,
                                         color = if (message.senderId == currentUser?.userId) Purple2 else AppTheme.colorScheme.chatContainer,
                                         text = message.text
                                     )
