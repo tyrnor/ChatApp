@@ -63,12 +63,9 @@ class FirebaseDatabaseService {
         flow {
             val formattedQuery =
                 FirestoreUtils.SEARCH_NAME_PATTERN.replace(query, "").lowercase(Locale.getDefault())
-            val snapshot = db.collection("users")
-                .orderBy("searchName")
+            val snapshot = db.collection("users").orderBy("searchName")
                 .whereGreaterThanOrEqualTo("searchName", formattedQuery)
-                .whereLessThanOrEqualTo("searchName", formattedQuery + '\uf8ff')
-                .limit(6)
-                .get()
+                .whereLessThanOrEqualTo("searchName", formattedQuery + '\uf8ff').limit(6).get()
                 .await()
             val users = snapshot.documents.map { document ->
                 document.toObject(UserInformation::class.java)?.copy(uid = document.id)
@@ -85,10 +82,8 @@ class FirebaseDatabaseService {
         val participantsKey = listOf(currentUserId, otherUserId).sorted().joinToString("-")
 
         return try {
-            val existingChatQuery = chatsCollection
-                .whereEqualTo("participantsKey", participantsKey)
-                .get()
-                .await()
+            val existingChatQuery =
+                chatsCollection.whereEqualTo("participantsKey", participantsKey).get().await()
 
             if (existingChatQuery.documents.isNotEmpty()) {
                 // Chat already exists
@@ -122,6 +117,18 @@ class FirebaseDatabaseService {
         }
 
         awaitClose { subscription.remove() }
+    }
+
+    suspend fun addMessage(chatId: String, senderId: String, text: String): Result<Unit> {
+        return try {
+            val newMessage = Message(senderId = senderId, text = text)
+            db.collection("chats").document(chatId).collection("messages")
+                .add(newMessage)
+                .await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
 }
