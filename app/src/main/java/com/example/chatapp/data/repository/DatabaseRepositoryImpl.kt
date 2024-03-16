@@ -41,4 +41,8 @@ class DatabaseRepositoryImpl @Inject constructor(private val databaseService: Fi
         return databaseService.listenForMessages(chatId)
     }
 
+    override suspend fun addMessage(chatId: String, senderId: String, text: String): Result<Unit> {
+        return databaseService.addMessage(chatId, senderId, text)
+    }
+
 }
