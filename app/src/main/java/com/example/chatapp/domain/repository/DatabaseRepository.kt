@@ -12,4 +12,5 @@ interface DatabaseRepository {
     suspend fun searchUsersByDisplayName(query: String): Flow<Result<List<UserInformation>>>
     suspend fun findOrCreateChat(currentUserId: String, otherUserId: String): Result<String>
     suspend fun listenForMessages(chatId: String): Flow<List<Message>>
+    suspend fun addMessage(chatId: String, senderId: String, text: String): Result<Unit>
 }
