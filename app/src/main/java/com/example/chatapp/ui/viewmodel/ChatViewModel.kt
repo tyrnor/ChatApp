@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatapp.data.model.Message
 import com.example.chatapp.data.model.UserInformation
+import com.example.chatapp.domain.usecase.database.AddMessageUseCase
 import com.example.chatapp.domain.usecase.database.FindOrCreateChatUseCase
 import com.example.chatapp.domain.usecase.database.GetUserByIdUseCase
 import com.example.chatapp.domain.usecase.database.ListenForMessagesUseCase
@@ -17,7 +18,8 @@ import javax.inject.Inject
 class ChatViewModel @Inject constructor(
     private val getUserByIdUseCase: GetUserByIdUseCase,
     private val findOrCreateChatUseCase: FindOrCreateChatUseCase,
-    private val listenForMessagesUseCase: ListenForMessagesUseCase
+    private val listenForMessagesUseCase: ListenForMessagesUseCase,
+    private val addMessageUseCase: AddMessageUseCase
 ) : ViewModel() {
     private val _userInformation = MutableStateFlow<Result<UserInformation?>>(Result.success(null))
     val userInformation: StateFlow<Result<UserInformation?>> = _userInformation
@@ -54,5 +56,18 @@ class ChatViewModel @Inject constructor(
                 _messages.value = messagesList
             }
         }
+    }
+
+    fun addMessage(chatId: String, senderId: String, text: String) : Result<Unit> {
+        return try {
+            viewModelScope.launch {
+
+                addMessageUseCase(chatId, senderId, text)
+            }
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+
     }
 }
