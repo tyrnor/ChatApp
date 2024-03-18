@@ -148,7 +148,9 @@ fun ChatScreen(otherUserId: String, navController: NavController, currentUser: A
                                     .align(Alignment.CenterVertically)
                                     .padding(start = AppTheme.size.small)
                                     .size(24.dp)
-                                    .clickable { }
+                                    .clickable {
+                                        chatViewModel.addMessage(chatId!!, currentUser!!.userId, message)
+                                    }
                             )
 
                         }
