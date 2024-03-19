@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -60,6 +61,16 @@ fun ChatScreen(otherUserId: String, navController: NavController, currentUser: A
     val chatId by chatViewModel.chatId.collectAsState()
     val messages by chatViewModel.messages.collectAsState()
 
+    val listState = rememberLazyListState()
+
+    var message by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    val focusManager = LocalFocusManager.current
+    val isKeyboardOpen by keyboardAsState()
+    if (!isKeyboardOpen) focusManager.clearFocus()
+
     LaunchedEffect(otherUserId) {
         chatViewModel.fetchUserById(otherUserId)
         chatViewModel.getChatId(currentUser!!.userId, otherUserId)
@@ -71,13 +82,15 @@ fun ChatScreen(otherUserId: String, navController: NavController, currentUser: A
         }
     }
 
-    var message by rememberSaveable {
-        mutableStateOf("")
+    LaunchedEffect(messages){
+        listState.animateScrollToItem(index =  if (messages.isNotEmpty()) messages.size - 1 else 0 )
     }
 
-    val focusManager = LocalFocusManager.current
-    val isKeyboardOpen by keyboardAsState()
-    if (!isKeyboardOpen) focusManager.clearFocus()
+    LaunchedEffect(isKeyboardOpen){
+        listState.animateScrollToItem(index =  if (messages.isNotEmpty()) messages.size - 1 else 0 )
+    }
+
+
 
 
     when {
@@ -149,7 +162,12 @@ fun ChatScreen(otherUserId: String, navController: NavController, currentUser: A
                                     .padding(start = AppTheme.size.small)
                                     .size(24.dp)
                                     .clickable {
-                                        chatViewModel.addMessage(chatId!!, currentUser!!.userId, message)
+                                        chatViewModel.addMessage(
+                                            chatId!!,
+                                            currentUser!!.userId,
+                                            message
+                                        )
+                                        message = ""
                                     }
                             )
 
@@ -165,7 +183,8 @@ fun ChatScreen(otherUserId: String, navController: NavController, currentUser: A
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(AppTheme.size.small)
+                                .padding(AppTheme.size.small),
+                            state = listState
                         ) {
                             items(messages) { message ->
                                 Row(

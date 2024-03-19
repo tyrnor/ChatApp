@@ -62,9 +62,9 @@ fun LoginScreen(navController: NavController, authenticationViewModel: Authentic
     val activity = LocalContext.current as Activity
 
     
-    LaunchedEffect(key1 = true){
-        authenticationViewModel.login("test@test.com", "test123")
-    }
+//    LaunchedEffect(key1 = true){
+//        authenticationViewModel.login("test@test.com", "test123")
+//    }
 
     LaunchedEffect(key1 = imeState.value) {
         if (imeState.value) {
