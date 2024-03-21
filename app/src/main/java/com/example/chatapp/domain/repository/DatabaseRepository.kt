@@ -1,5 +1,6 @@
 package com.example.chatapp.domain.repository
 
+import com.example.chatapp.data.model.Chat
 import com.example.chatapp.data.model.ContactInformation
 import com.example.chatapp.data.model.Message
 import com.example.chatapp.data.model.UserInformation
@@ -18,4 +19,5 @@ interface DatabaseRepository {
     suspend fun findOrCreateChat(otherUserId: String): Result<String>
     suspend fun listenForMessages(chatId: String): Flow<List<Message>>
     suspend fun addMessage(chatId: String, text: String): Result<Unit>
+    suspend fun getUserChats() : Flow<List<Chat>>
 }
