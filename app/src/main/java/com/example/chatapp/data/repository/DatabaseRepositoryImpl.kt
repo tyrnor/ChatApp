@@ -1,5 +1,6 @@
 package com.example.chatapp.data.repository
 
+import com.example.chatapp.data.model.Chat
 import com.example.chatapp.data.model.ContactInformation
 import com.example.chatapp.data.model.Message
 import com.example.chatapp.data.model.UserInformation
@@ -42,6 +43,10 @@ class DatabaseRepositoryImpl @Inject constructor(private val databaseService: Fi
 
     override suspend fun addMessage(chatId: String, text: String): Result<Unit> {
         return databaseService.addMessage(chatId, text)
+    }
+
+    override suspend fun getUserChats(): Flow<List<Chat>> {
+        return databaseService.getUserChats()
     }
 
 }
