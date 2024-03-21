@@ -107,7 +107,7 @@ fun HomeNavigation(
             } else {
                 slideOutFadeOutFromRight()
             }
-        }) { ChatsScreen() }
+        }) { ChatsScreen(navController) }
         composable(Settings.route, enterTransition = {
             slideInFadeInFromLeft()
         }, exitTransition = {
