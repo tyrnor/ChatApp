@@ -82,12 +82,12 @@ fun ChatScreen(otherUserId: String, navController: NavController, currentUser: A
         }
     }
 
-    LaunchedEffect(messages){
-        listState.animateScrollToItem(index =  if (messages.isNotEmpty()) messages.size - 1 else 0 )
+    LaunchedEffect(messages) {
+        listState.animateScrollToItem(index = if (messages.isNotEmpty()) messages.size - 1 else 0)
     }
 
-    LaunchedEffect(isKeyboardOpen){
-        listState.animateScrollToItem(index =  if (messages.isNotEmpty()) messages.size - 1 else 0 )
+    LaunchedEffect(isKeyboardOpen) {
+        listState.animateScrollToItem(index = if (messages.isNotEmpty()) messages.size - 1 else 0)
     }
 
 
@@ -164,7 +164,6 @@ fun ChatScreen(otherUserId: String, navController: NavController, currentUser: A
                                     .clickable {
                                         chatViewModel.addMessage(
                                             chatId!!,
-                                            currentUser!!.userId,
                                             message
                                         )
                                         message = ""
