@@ -38,9 +38,9 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun getChatId(otherUserId: String) {
+    fun getChatId(currentUserId: String, otherUserId: String) {
         viewModelScope.launch {
-            val result = findOrCreateChatUseCase(otherUserId)
+            val result = findOrCreateChatUseCase(currentUserId, otherUserId)
             when {
                 result.isSuccess -> {
                     _chatId.value = result.getOrNull()
@@ -61,11 +61,10 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun addMessage(chatId: String, text: String): Result<Unit> {
+    fun addMessage(chatId: String, currentUserId: String, text: String): Result<Unit> {
         return try {
             viewModelScope.launch {
-
-                addMessageUseCase(chatId, text)
+                addMessageUseCase(chatId, currentUserId, text)
             }
             Result.success(Unit)
         } catch (e: Exception) {

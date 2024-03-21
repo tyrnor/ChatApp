@@ -73,7 +73,7 @@ fun ChatScreen(otherUserId: String, navController: NavController, currentUser: A
 
     LaunchedEffect(otherUserId) {
         chatViewModel.fetchUserById(otherUserId)
-        chatViewModel.getChatId(otherUserId)
+        chatViewModel.getChatId(currentUser!!.userId, otherUserId)
     }
 
     LaunchedEffect(chatId) {
@@ -89,9 +89,6 @@ fun ChatScreen(otherUserId: String, navController: NavController, currentUser: A
     LaunchedEffect(isKeyboardOpen) {
         listState.animateScrollToItem(index = if (messages.isNotEmpty()) messages.size - 1 else 0)
     }
-
-
-
 
     when {
         userInformationResult.isSuccess -> {
@@ -164,6 +161,7 @@ fun ChatScreen(otherUserId: String, navController: NavController, currentUser: A
                                     .clickable {
                                         chatViewModel.addMessage(
                                             chatId!!,
+                                            currentUser!!.userId,
                                             message
                                         )
                                         message = ""

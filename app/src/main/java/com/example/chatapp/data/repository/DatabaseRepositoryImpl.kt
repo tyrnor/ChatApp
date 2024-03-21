@@ -11,6 +11,7 @@ import javax.inject.Inject
 
 class DatabaseRepositoryImpl @Inject constructor(private val databaseService: FirebaseDatabaseService) :
     DatabaseRepository {
+
     override suspend fun addUser(uid: String, userInfo: UserInformation): Result<Unit> {
         return databaseService.addUser(uid, userInfo)
     }
@@ -32,21 +33,22 @@ class DatabaseRepositoryImpl @Inject constructor(private val databaseService: Fi
     }
 
     override suspend fun findOrCreateChat(
+        currentUserId: String,
         otherUserId: String,
     ): Result<String> {
-        return databaseService.findOrCreateChat(otherUserId)
+        return databaseService.findOrCreateChat(currentUserId, otherUserId)
     }
 
     override suspend fun listenForMessages(chatId: String): Flow<List<Message>> {
         return databaseService.listenForMessages(chatId)
     }
 
-    override suspend fun addMessage(chatId: String, text: String): Result<Unit> {
-        return databaseService.addMessage(chatId, text)
+    override suspend fun addMessage(chatId: String, currentUserId: String, text: String): Result<Unit> {
+        return databaseService.addMessage(chatId, currentUserId, text)
     }
 
-    override suspend fun getUserChats(): Flow<List<Chat>> {
-        return databaseService.getUserChats()
+    override suspend fun getUserChats(currentUserId: String): Flow<List<Chat>> {
+        return databaseService.getUserChats(currentUserId)
     }
 
 }

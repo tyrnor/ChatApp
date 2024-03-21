@@ -1,5 +1,6 @@
 package com.example.chatapp.data.source.remote
 
+import android.util.Log
 import com.example.chatapp.common.FirestoreUtils
 import com.example.chatapp.data.model.Chat
 import com.example.chatapp.data.model.ContactInformation
@@ -19,10 +20,11 @@ import kotlinx.coroutines.tasks.await
 import java.util.Locale
 
 
+
 class FirebaseDatabaseService {
 
     private val db = Firebase.firestore
-    private val currentUserId = Firebase.auth.currentUser!!.uid
+
 
     suspend fun addUser(uid: String, userInfo: UserInformation): Result<Unit> {
         val searchName = FirestoreUtils.SEARCH_NAME_PATTERN.replace(userInfo.displayName, "")
@@ -79,9 +81,10 @@ class FirebaseDatabaseService {
             emit(Result.failure(e))
         }
 
-    suspend fun findOrCreateChat(otherUserId: String): Result<String> {
+    suspend fun findOrCreateChat(currentUserId: String, otherUserId: String): Result<String> {
         val chatsCollection = db.collection("chats")
         val userChats = db.collection("users").document(currentUserId).collection("chats")
+        val otherUserChats = db.collection("users").document(otherUserId).collection("chats")
         // Ensure the IDs are in a consistent order to create a deterministic key
         val participantsKey = listOf(currentUserId, otherUserId).sorted().joinToString("-")
 
@@ -93,18 +96,24 @@ class FirebaseDatabaseService {
                 // Chat already exists
                 Result.success(existingChatQuery.documents.first().id)
             } else {
+                val otherUserInformation = getUserById(otherUserId)
+                val currentUserInformation = getUserById(currentUserId)
                 // No existing chat found; create a new one
                 val newChatData = hashMapOf(
                     "participantsIds" to listOf(currentUserId, otherUserId).sorted(),
                     "participantsKey" to participantsKey  // Store the composite key
                 )
-                val otherUserInformation = getUserById(otherUserId)
-                val newUserChatData = hashMapOf(
+                val userChatData = hashMapOf(
                     "otherUserId" to otherUserId,
                     "otherUserDisplayName" to otherUserInformation.getOrNull()?.displayName
                 )
+                val otherUserChatData = hashMapOf(
+                    "otherUserId" to currentUserId,
+                    "otherUserDisplayName" to currentUserInformation.getOrNull()?.displayName
+                )
                 val newChatDocument = chatsCollection.add(newChatData).await()
-                userChats.add(newUserChatData).await()
+                userChats.add(userChatData).await()
+                otherUserChats.add(otherUserChatData).await()
                 Result.success(newChatDocument.id)
             }
         } catch (e: Exception) {
@@ -131,7 +140,7 @@ class FirebaseDatabaseService {
         awaitClose { subscription.remove() }
     }
 
-    suspend fun getUserChats(): Flow<List<Chat>> = callbackFlow {
+    suspend fun getUserChats(currentUserId: String): Flow<List<Chat>> = callbackFlow {
         val chatsRef = db.collection("users").document(currentUserId).collection("chats")
         val subscription = chatsRef.addSnapshotListener { value, error ->
             if (error != null) {
@@ -145,7 +154,7 @@ class FirebaseDatabaseService {
         awaitClose { subscription.remove() }
     }
 
-    suspend fun addMessage(chatId: String, text: String): Result<Unit> {
+    suspend fun addMessage(chatId: String, currentUserId: String, text: String): Result<Unit> {
         return try {
             val newMessage = Message(senderId = currentUserId, text = text)
             db.collection("chats").document(chatId)
