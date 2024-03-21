@@ -1,6 +1,7 @@
 package com.example.chatapp.data.source.remote
 
 import com.example.chatapp.common.FirestoreUtils
+import com.example.chatapp.data.model.Chat
 import com.example.chatapp.data.model.ContactInformation
 import com.example.chatapp.data.model.Message
 import com.example.chatapp.data.model.UserInformation
@@ -79,7 +80,8 @@ class FirebaseDatabaseService {
         }
 
     suspend fun findOrCreateChat(otherUserId: String): Result<String> {
-        val chatsCollection = db.collection("users").document(currentUserId).collection("chats")
+        val chatsCollection = db.collection("chats")
+        val userChats = db.collection("users").document(currentUserId).collection("chats")
         // Ensure the IDs are in a consistent order to create a deterministic key
         val participantsKey = listOf(currentUserId, otherUserId).sorted().joinToString("-")
 
@@ -96,7 +98,13 @@ class FirebaseDatabaseService {
                     "participantsIds" to listOf(currentUserId, otherUserId).sorted(),
                     "participantsKey" to participantsKey  // Store the composite key
                 )
+                val otherUserInformation = getUserById(otherUserId)
+                val newUserChatData = hashMapOf(
+                    "otherUserId" to otherUserId,
+                    "otherUserDisplayName" to otherUserInformation.getOrNull()?.displayName
+                )
                 val newChatDocument = chatsCollection.add(newChatData).await()
+                userChats.add(newUserChatData).await()
                 Result.success(newChatDocument.id)
             }
         } catch (e: Exception) {
@@ -106,7 +114,7 @@ class FirebaseDatabaseService {
 
     suspend fun listenForMessages(chatId: String): Flow<List<Message>> = callbackFlow {
         val messagesRef =
-            db.collection("users").document(currentUserId).collection("chats").document(chatId)
+            db.collection("chats").document(chatId)
                 .collection("messages")
                 .orderBy("timestamp", Query.Direction.ASCENDING)
         val subscription = messagesRef.addSnapshotListener { value, error ->
@@ -123,10 +131,24 @@ class FirebaseDatabaseService {
         awaitClose { subscription.remove() }
     }
 
+    suspend fun getUserChats(): Flow<List<Chat>> = callbackFlow {
+        val chatsRef = db.collection("users").document(currentUserId).collection("chats")
+        val subscription = chatsRef.addSnapshotListener { value, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+
+            val chats = value?.documents?.mapNotNull { it.toObject<Chat>() }.orEmpty()
+            trySend(chats)
+        }
+        awaitClose { subscription.remove() }
+    }
+
     suspend fun addMessage(chatId: String, text: String): Result<Unit> {
         return try {
             val newMessage = Message(senderId = currentUserId, text = text)
-            db.collection("users").document(currentUserId).collection("chats").document(chatId)
+            db.collection("chats").document(chatId)
                 .collection("messages")
                 .add(newMessage)
                 .await()
