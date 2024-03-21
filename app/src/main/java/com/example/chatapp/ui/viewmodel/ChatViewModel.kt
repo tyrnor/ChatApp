@@ -1,6 +1,5 @@
 package com.example.chatapp.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatapp.data.model.Message
@@ -9,8 +8,6 @@ import com.example.chatapp.domain.usecase.database.AddMessageUseCase
 import com.example.chatapp.domain.usecase.database.FindOrCreateChatUseCase
 import com.example.chatapp.domain.usecase.database.GetUserByIdUseCase
 import com.example.chatapp.domain.usecase.database.ListenForMessagesUseCase
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,11 +38,9 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun getChatId(currentUserId: String, otherUserId: String) {
-        val userId = Firebase.auth.currentUser?.uid
-        Log.d("TAG", "getChatId: $userId")
+    fun getChatId(otherUserId: String) {
         viewModelScope.launch {
-            val result = findOrCreateChatUseCase(currentUserId, otherUserId)
+            val result = findOrCreateChatUseCase(otherUserId)
             when {
                 result.isSuccess -> {
                     _chatId.value = result.getOrNull()

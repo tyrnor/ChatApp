@@ -4,7 +4,7 @@ import com.example.chatapp.domain.repository.DatabaseRepository
 import javax.inject.Inject
 
 class FindOrCreateChatUseCase @Inject constructor(private val databaseRepository: DatabaseRepository){
-    suspend operator fun invoke(currentUserId: String, otherUserId: String): Result<String> {
-        return databaseRepository.findOrCreateChat(currentUserId, otherUserId)
+    suspend operator fun invoke(otherUserId: String): Result<String> {
+        return databaseRepository.findOrCreateChat(otherUserId)
     }
 }

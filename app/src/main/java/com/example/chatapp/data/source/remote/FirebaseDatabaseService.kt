@@ -78,7 +78,7 @@ class FirebaseDatabaseService {
             emit(Result.failure(e))
         }
 
-    suspend fun findOrCreateChat(cuid: String, otherUserId: String): Result<String> {
+    suspend fun findOrCreateChat(otherUserId: String): Result<String> {
         val chatsCollection = db.collection("users").document(currentUserId).collection("chats")
         // Ensure the IDs are in a consistent order to create a deterministic key
         val participantsKey = listOf(currentUserId, otherUserId).sorted().joinToString("-")

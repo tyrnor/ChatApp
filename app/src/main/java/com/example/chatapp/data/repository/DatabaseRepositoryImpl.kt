@@ -31,10 +31,9 @@ class DatabaseRepositoryImpl @Inject constructor(private val databaseService: Fi
     }
 
     override suspend fun findOrCreateChat(
-        currentUserId: String,
         otherUserId: String,
     ): Result<String> {
-        return databaseService.findOrCreateChat(currentUserId, otherUserId)
+        return databaseService.findOrCreateChat(otherUserId)
     }
 
     override suspend fun listenForMessages(chatId: String): Flow<List<Message>> {

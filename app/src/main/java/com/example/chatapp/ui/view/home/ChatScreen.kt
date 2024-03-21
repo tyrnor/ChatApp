@@ -73,7 +73,7 @@ fun ChatScreen(otherUserId: String, navController: NavController, currentUser: A
 
     LaunchedEffect(otherUserId) {
         chatViewModel.fetchUserById(otherUserId)
-        chatViewModel.getChatId(currentUser!!.userId, otherUserId)
+        chatViewModel.getChatId(otherUserId)
     }
 
     LaunchedEffect(chatId) {
