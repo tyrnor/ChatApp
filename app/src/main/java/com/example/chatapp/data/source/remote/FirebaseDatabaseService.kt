@@ -83,8 +83,8 @@ class FirebaseDatabaseService {
 
     suspend fun findOrCreateChat(currentUserId: String, otherUserId: String): Result<String> {
         val chatsCollection = db.collection("chats")
-        val userChats = db.collection("users").document(currentUserId).collection("chats")
-        val otherUserChats = db.collection("users").document(otherUserId).collection("chats")
+        val userChats = db.collection("users").document(currentUserId).collection("chats").document(otherUserId)
+        val otherUserChats = db.collection("users").document(otherUserId).collection("chats").document(currentUserId)
         // Ensure the IDs are in a consistent order to create a deterministic key
         val participantsKey = listOf(currentUserId, otherUserId).sorted().joinToString("-")
 
@@ -105,15 +105,17 @@ class FirebaseDatabaseService {
                 )
                 val userChatData = hashMapOf(
                     "otherUserId" to otherUserId,
-                    "otherUserDisplayName" to otherUserInformation.getOrNull()?.displayName
-                )
+                    "otherUserDisplayName" to otherUserInformation.getOrNull()?.displayName,
+                    "lastMessage" to ""
+                 )
                 val otherUserChatData = hashMapOf(
                     "otherUserId" to currentUserId,
-                    "otherUserDisplayName" to currentUserInformation.getOrNull()?.displayName
+                    "otherUserDisplayName" to currentUserInformation.getOrNull()?.displayName,
+                    "lastMessage" to ""
                 )
                 val newChatDocument = chatsCollection.add(newChatData).await()
-                userChats.add(userChatData).await()
-                otherUserChats.add(otherUserChatData).await()
+                userChats.set(userChatData).await()
+                otherUserChats.set(otherUserChatData).await()
                 Result.success(newChatDocument.id)
             }
         } catch (e: Exception) {
@@ -154,13 +156,15 @@ class FirebaseDatabaseService {
         awaitClose { subscription.remove() }
     }
 
-    suspend fun addMessage(chatId: String, currentUserId: String, text: String): Result<Unit> {
+    suspend fun addMessage(chatId: String, currentUserId: String, otherUserId: String, text: String): Result<Unit> {
         return try {
             val newMessage = Message(senderId = currentUserId, text = text)
             db.collection("chats").document(chatId)
                 .collection("messages")
                 .add(newMessage)
                 .await()
+            db.collection("users").document(currentUserId).collection("chats").document(otherUserId).update("lastMessage", text)
+            db.collection("users").document(otherUserId).collection("chats").document(currentUserId).update("lastMessage", text)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
