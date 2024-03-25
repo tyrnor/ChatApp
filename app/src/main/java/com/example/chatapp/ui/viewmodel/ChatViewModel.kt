@@ -61,10 +61,10 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun addMessage(chatId: String, currentUserId: String, text: String): Result<Unit> {
+    fun addMessage(chatId: String, currentUserId: String, otherUserId: String, text: String): Result<Unit> {
         return try {
             viewModelScope.launch {
-                addMessageUseCase(chatId, currentUserId, text)
+                addMessageUseCase(chatId, currentUserId, otherUserId, text)
             }
             Result.success(Unit)
         } catch (e: Exception) {
