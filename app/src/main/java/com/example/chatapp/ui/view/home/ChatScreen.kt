@@ -162,6 +162,7 @@ fun ChatScreen(otherUserId: String, navController: NavController, currentUser: A
                                         chatViewModel.addMessage(
                                             chatId!!,
                                             currentUser!!.userId,
+                                            otherUserId,
                                             message
                                         )
                                         message = ""
