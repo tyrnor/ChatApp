@@ -3,12 +3,18 @@ package com.example.chatapp.ui.view.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,7 +27,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.chatapp.ui.navigation.Chat
 import com.example.chatapp.ui.theme.AppTheme
-import com.example.chatapp.ui.theme.Grey
 import com.example.chatapp.ui.theme.LightGrey
 import com.example.chatapp.ui.viewmodel.ChatsViewModel
 import com.google.firebase.auth.ktx.auth
@@ -43,20 +48,33 @@ fun ChatsScreen(navController: NavController) {
     )
     {
         items(chats) {
-            Column(modifier = Modifier
+            Row(modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
                     navController.navigate(Chat.route + "/${it.otherUserId}")
                 }) {
-                Text(text = it.otherUserDisplayName)
-                Text(text = it.lastMessage)
-                Divider(
+                Icon(
+                    imageVector = Icons.Filled.Circle,
+                    contentDescription = "",
                     modifier = Modifier
-                        .background(LightGrey)
-                        .height(1.dp)
-                        .align(Alignment.CenterHorizontally)
-                        .fillMaxWidth(0.99f)
+                        .size(48.dp)
+                        .padding(AppTheme.size.small),
+                    tint = AppTheme.colorScheme.icons
                 )
+                Column {
+                    Text(text = it.otherUserDisplayName)
+                    Text(
+                        text = it.lastMessage,
+                        modifier = Modifier.padding(bottom = AppTheme.size.normal)
+                    )
+                    Divider(
+                        modifier = Modifier
+                            .background(LightGrey)
+                            .height(0.7.dp)
+                            .align(Alignment.CenterHorizontally)
+                            .fillMaxWidth(0.99f)
+                    )
+                }
             }
 
 
