@@ -36,7 +36,7 @@ fun BottomNavigationBar(
 ) {
 
     var selectedItemIndex by rememberSaveable {
-        mutableIntStateOf(0)
+        mutableIntStateOf(1)
     }
 
     Column {

@@ -76,7 +76,7 @@ fun HomeNavigation(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Contacts.route,
+        startDestination = Chats.route,
         modifier = Modifier.background(
             AppTheme.colorScheme.background
         )

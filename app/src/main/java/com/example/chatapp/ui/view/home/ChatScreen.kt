@@ -45,6 +45,7 @@ import com.example.chatapp.data.model.AuthenticatedUser
 import com.example.chatapp.data.model.UserInformation
 import com.example.chatapp.ui.composables.HomeTopBar
 import com.example.chatapp.ui.composables.MessageContainer
+import com.example.chatapp.ui.navigation.Chats
 import com.example.chatapp.ui.theme.AppTheme
 import com.example.chatapp.ui.theme.DarkGrey
 import com.example.chatapp.ui.theme.Grey
@@ -102,7 +103,7 @@ fun ChatScreen(otherUserId: String, navController: NavController, currentUser: A
                             title = user.displayName,
                             leftIcon = Icons.Filled.ArrowBackIos,
                             leftIconDescription = "Back",
-                            onClickLeft = { navController.popBackStack() },
+                            onClickLeft = { navController.navigate(Chats.route) },
                             rightIcon = Icons.Filled.Circle,
                             rightIconDescription = "Profile image"
                         ) {
