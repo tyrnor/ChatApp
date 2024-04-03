@@ -112,7 +112,7 @@ fun HomeNavigation(
             slideInFadeInFromLeft()
         }, exitTransition = {
             slideOutFadeOutFromRight()
-        }) { SettingsScreen() }
+        }) { SettingsScreen(user) }
         composable(Search.route,
             enterTransition = {
                 fadeIn(animationSpec = tween(100))
