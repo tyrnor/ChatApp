@@ -39,5 +39,9 @@ fun SettingsScreen(user: AuthenticatedUser) {
             } ?: "Username not available",
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
+        Text(
+            text = user.email ?: "Username not available",
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
     }
 }
