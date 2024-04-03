@@ -54,7 +54,7 @@ import com.example.chatapp.ui.viewmodel.ChatViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(otherUserId: String, navController: NavController, currentUser: AuthenticatedUser?) {
+fun ChatScreen(otherUserId: String, navController: NavController, currentUser: AuthenticatedUser) {
 
     val chatViewModel: ChatViewModel = hiltViewModel()
     val userInformationResult by chatViewModel.userInformation.collectAsState()
@@ -73,7 +73,7 @@ fun ChatScreen(otherUserId: String, navController: NavController, currentUser: A
 
     LaunchedEffect(otherUserId) {
         chatViewModel.fetchUserById(otherUserId)
-        chatViewModel.getChatId(currentUser!!.userId, otherUserId)
+        chatViewModel.getChatId(currentUser.userId, otherUserId)
     }
 
     LaunchedEffect(chatId) {
@@ -161,7 +161,7 @@ fun ChatScreen(otherUserId: String, navController: NavController, currentUser: A
                                     .clickable {
                                         chatViewModel.addMessage(
                                             chatId!!,
-                                            currentUser!!.userId,
+                                            currentUser.userId,
                                             otherUserId,
                                             message
                                         )
@@ -189,13 +189,13 @@ fun ChatScreen(otherUserId: String, navController: NavController, currentUser: A
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(vertical = AppTheme.size.small),
-                                    horizontalArrangement = if (message.senderId == currentUser?.userId) Arrangement.End else Arrangement.Start
+                                    horizontalArrangement = if (message.senderId == currentUser.userId) Arrangement.End else Arrangement.Start
                                 ) {
                                     MessageContainer(
-                                        modifier = if (message.senderId == currentUser?.userId) Modifier.padding(
+                                        modifier = if (message.senderId == currentUser.userId) Modifier.padding(
                                             start = AppTheme.size.large
                                         ) else Modifier.padding(end = AppTheme.size.large),
-                                        color = if (message.senderId == currentUser?.userId) Purple2 else AppTheme.colorScheme.chatContainer,
+                                        color = if (message.senderId == currentUser.userId) Purple2 else AppTheme.colorScheme.chatContainer,
                                         text = message.text
                                     )
 

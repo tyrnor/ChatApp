@@ -72,7 +72,7 @@ fun Navigation() {
 fun HomeNavigation(
     navController: NavHostController,
     homeViewModel: HomeViewModel,
-    user: AuthenticatedUser?,
+    user: AuthenticatedUser,
 ) {
     NavHost(
         navController = navController,

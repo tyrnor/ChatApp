@@ -29,8 +29,8 @@ class AuthenticationViewModel @Inject constructor(
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
     val loginState: StateFlow<LoginState> = _loginState
 
-    private val _user = MutableStateFlow<AuthenticatedUser?>(null)
-    val user: StateFlow<AuthenticatedUser?> = _user
+    private val _user = MutableStateFlow(AuthenticatedUser("", "", ""))
+    val user: StateFlow<AuthenticatedUser> = _user
 
     private val _loginFailed = MutableStateFlow(false)
     val loginFailed : StateFlow<Boolean> = _loginFailed

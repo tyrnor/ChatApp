@@ -50,7 +50,7 @@ import com.example.chatapp.ui.viewmodel.SearchViewModel
 
 
 @Composable
-fun SearchScreen(navController: NavController, user: AuthenticatedUser?) {
+fun SearchScreen(navController: NavController, user: AuthenticatedUser) {
     val searchViewModel: SearchViewModel = hiltViewModel()
 
     var searchQuery by rememberSaveable {
@@ -60,7 +60,7 @@ fun SearchScreen(navController: NavController, user: AuthenticatedUser?) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
 
-    val uid = user?.userId
+    val uid = user.userId
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
@@ -134,7 +134,7 @@ fun SearchScreen(navController: NavController, user: AuthenticatedUser?) {
         }
 
 
-        UserList(query = searchQuery, viewModel = searchViewModel, uid = uid ?: "", navController = navController)
+        UserList(query = searchQuery, viewModel = searchViewModel, uid = uid, navController = navController)
     }
 }
 
